@@ -185,6 +185,10 @@ export default {
         this.commentsList = res.data.data;
         this.total = res.data.total;
       });
+    },
+    // 发表一级评论
+    reply(){
+
     }
   },
   mounted() {
