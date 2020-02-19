@@ -56,7 +56,7 @@
         </el-form>
 
         <!-- 评论展示部分 -->
-        <detailComments></detailComments>
+        <detailComments :data='commentsList' v-for="(item,index) in commentsList" :key="index"></detailComments>
 
         <!-- 底部分页 -->
         <el-pagination
@@ -104,18 +104,18 @@ export default {
       // 文章数据
       detailData: {},
       // 评论列表信息
-      commentsList: "",
+      commentsList: [],
 
       // 分页时更新评论的列表
       updataComments: {
         // 当前文章id
         post: 4,
         // 需要提交的每页几个数据
-        _limit: "",
+        _limit: 2,
         // 当前页的数据从第几个开始
-        _start: 0
+        _start: 0,
       },
-      
+
       // 发表评论的数据
       form: {
         inputData: ""
@@ -137,10 +137,24 @@ export default {
     handleSizeChange(val) {
       // console.log(`每页 ${val} 条`);
       this.updataComments._limit = val;
+      this.getDataList()
     },
     // 当前是第几页
     handleCurrentChange(val) {
       this.updataComments._start = (val - 1) * 2;
+      this.getDataList()
+    },
+    // 获取评论列表
+    getDataList(){
+      console.log(this.updataComments)
+        this.$axios({
+        url: "/posts/comments",
+        params: this.updataComments
+      }).then(res => {
+        console.log(res);
+        this.commentsList = res.data.data;
+        this.total = res.data.total;
+      });
     }
   },
   mounted() {
@@ -155,14 +169,7 @@ export default {
       this.detailData = res.data.data[0];
     });
     // 获取评论列表
-    this.$axios({
-      url: "/posts/comments",
-      params: this.updataComments
-    }).then(res => {
-      console.log(res);
-      this.commentsList = res.data.data;
-      this.total = res.data.total;
-    });
+    this.getDataList()
   },
   components: {
     detailComments

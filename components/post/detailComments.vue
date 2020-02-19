@@ -25,11 +25,17 @@
 
 <script>
 export default {
+    props:{
+        data:{
+            type: Array,
+            default:[]
+        }
+    },
     data(){
         return{
-            isshow: false
+            
         }
-    }
+    },
 }
 </script>
 
