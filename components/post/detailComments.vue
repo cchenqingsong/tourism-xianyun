@@ -3,22 +3,25 @@
           <!-- 评论个人信息区域 -->
       <el-row class="userinfo" type="flex">
           <!-- 用户小头像 -->
-          <el-avatar size='small'  src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+          <el-avatar size='small' :src="$axios.defaults.baseURL + data.account.defaultAvatar"></el-avatar>
           <!-- 用户名 -->
-          <span>爱情绞肉机</span>
+          <span>{{data.account.nickname}}</span>&nbsp;&nbsp;
           <!-- 评论时间 -->
           <span>2019-12-14 4:53</span>
       </el-row>
 
       <!-- 评论文本区域 -->
       <el-row class="comments-content" >
-          文本
+          <!-- 显示的文本 -->
+          <p>{{data.content}}</p>
+          <!-- 遍历图片 -->
+          <img :src="$axios.defaults.baseURL + item.url" alt="" v-for="(item,index) in data.pics" :key="index" >
       </el-row>
 
       <!-- 回复按钮 -->
       <el-row type="flex" style="justify-content: space-between">
           <div></div>
-           <a href="javascript:;" style="font-size:12px">回复</a>
+           <a href="javascript:;" style="font-size:12px" @click="reply">回复</a>
       </el-row>
       </el-card>
 </template>
@@ -27,15 +30,22 @@
 export default {
     props:{
         data:{
-            type: Array,
-            default:[]
+            type: Object,
+            default:{
+                // pics:[]
+            }
         }
     },
     data(){
         return{
-            
+
         }
     },
+    methods: {
+        reply(){
+            console.log(this.data)
+        }
+    }
 }
 </script>
 
@@ -46,6 +56,9 @@ export default {
 }
 .comments-content{
     padding-left: 30px; 
+    img{
+        width: 80px;
+    }
 }
 .userinfo{
     align-items: center;

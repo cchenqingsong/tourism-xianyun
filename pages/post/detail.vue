@@ -56,7 +56,7 @@
         </el-form>
 
         <!-- 评论展示部分 -->
-        <detailComments :data='commentsList' v-for="(item,index) in commentsList" :key="index"></detailComments>
+        <detailComments v-for="(item,index) in commentsList" :key="index" :data='item'></detailComments>
 
         <!-- 底部分页 -->
         <el-pagination
