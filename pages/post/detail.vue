@@ -65,8 +65,10 @@
             </div>
           </el-form-item>
         </el-form>
+
         <!-- 评论展示部分 -->
-        <div class="commit-list"></div>
+        <detailComments></detailComments>
+
         <!-- 底部分页 -->
         <el-pagination
           @size-change="handleSizeChange"
@@ -103,6 +105,7 @@
 </template>
 
 <script>
+import detailComments from '@/components/post/detailComments'
 export default {
   data() {
       return {
@@ -127,6 +130,9 @@ export default {
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
       }
+  },
+  components: {
+    detailComments
   }
 }
 </script>
