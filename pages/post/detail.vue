@@ -55,8 +55,38 @@
           </el-form-item>
         </el-form>
 
+
+
         <!-- 评论展示部分 -->
-        <detailComments v-for="(item,index) in commentsList" :key="index" :data='item'></detailComments>
+        <!-- 为了写样式  在这里把一第一层评论提取出来了-->
+        <el-card v-for="(item,index) in commentsList" :key="index" >
+          <el-row class="userinfo" type="flex">
+                <!-- 用户小头像 -->
+                <el-avatar size='small' :src="$axios.defaults.baseURL + item.account.defaultAvatar"></el-avatar>
+                <!-- 用户名 -->
+                <span>{{item.account.nickname}}</span>&nbsp;&nbsp;
+                <!-- 评论时间 -->
+                <span>2019-12-14 4:53</span>
+            </el-row>
+
+          <!-- 组件递归 -->
+          <detailComments :data='item.parent' v-if="item.parent"></detailComments>
+
+          <!-- 第一层评论的内容 -->
+          <!-- 评论文本区域 -->
+            <el-row class="comments-content" >
+                <!-- 遍历图片 -->
+                <img :src="$axios.defaults.baseURL + value.url" alt="" v-for="(value,index1) in item.pics" :key="index1" >
+                <!-- 显示的文本 -->
+                <p style="padding-top:10px;">{{item.content}}</p>
+            </el-row>
+            <!-- 回复按钮 -->
+            <el-row type="flex" style="justify-content: space-between">
+                <div></div>
+                <a href="javascript:;" style="font-size:12px;padding-bottom:10px" @click="reply">回复</a>
+            </el-row>
+        </el-card>
+
 
         <!-- 底部分页 -->
         <el-pagination
