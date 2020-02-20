@@ -72,7 +72,7 @@
             </el-row>
 
           <!-- 组件递归 -->
-          <detailComments :data='item.parent' v-if="item.parent"></detailComments>
+          <detailComments :data='item.parent' v-if="item.parent" @click="reply"></detailComments>
 
           <!-- 第一层评论的内容 -->
           <!-- 评论文本区域 -->
@@ -85,7 +85,7 @@
             <!-- 回复按钮 -->
             <el-row type="flex" style="justify-content: space-between">
                 <div></div>
-                <a href="javascript:;" style="font-size:12px;padding-bottom:10px" @click="reply">回复</a>
+                <a href="javascript:;" style="font-size:12px;padding-bottom:10px" @click="reply(item)">回复</a>
             </el-row>
         </el-card>
 
@@ -146,7 +146,8 @@ export default {
       // 发表评论输入框的数据
       inputData: "",
       // 封面图片的数组
-      pictureList:[]
+      pictureList:[],
+      follow: ''
     };
   },
   methods: {
@@ -159,13 +160,12 @@ export default {
     },
     // 添加封面图片成功时
     handleSuccess(response, file, fileList){
-      console.log(fileList)
+      // console.log(fileList)
       this.pictureList = fileList.map(value=>{
         return value.response[0]
-      }),
-      console.log(this.pictureList)
+      })
+      // console.log(this.pictureList)
     },
-
     // 分页
     // 每页多少条
     handleSizeChange(val) {
@@ -210,6 +210,10 @@ export default {
     },
     // 提交评论
     submit(){
+      if(!this.inputData){
+         this.$message.error('输入不能为空')
+         return;
+      }
       this.$axios({
         url: '/comments',
         method: 'POST',
@@ -224,13 +228,38 @@ export default {
           pics: this.pictureList
         }
       }).then(res=>{
-        console.log(res)
+        // console.log(res)
         this.getDataList()
+        this.$message.success('提交成功')
       })
     },
     // 回复评论
-    reply(){
-      console.log(this.$store.state.user.userInfo)
+    reply(item){
+      console.log('12321321')
+      this.follow = item.id
+      if(!this.inputData){
+         this.$message.error('输入不能为空')
+         return;
+      }
+      this.$axios({
+        url: '/comments',
+        method: 'POST',
+        headers: {
+                    // 必须要做token前面加上`Bearer `字符串，后面有一个空格的
+                    Authorization: `Bearer ` + this.$store.state.user.userInfo.token
+                },
+        data: {
+          // 当前文章id
+          post: 4,
+          content: this.inputData,
+          pics: this.pictureList,
+          follow: this.follow
+        }
+      }).then(res=>{
+        // console.log(res)
+        this.getDataList()
+        this.$message.success('回复成功')
+      })
     }
   },
   mounted() {
