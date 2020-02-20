@@ -43,16 +43,13 @@
           <el-form-item style="flex:100%;">
             <div class="list-button" style="">
               <el-upload
-                action="https://jsonplaceholder.typicode.com/posts/"
+                :action="$axios.defaults.baseURL+ '/upload'"
                 list-type="picture-card"
-                :on-preview="handlePictureCardPreview"
+                :on-success='handleSuccess'
                 :on-remove="handleRemove"
-              >
+                name="files">
                 <i class="el-icon-plus"></i>
               </el-upload>
-              <el-dialog :visible.sync="dialogVisible">
-                <img width="100%" :src="dialogImageUrl" alt="">
-              </el-dialog>
               <div>
                 <el-button type="primary" size="mini" @click="submit">提交</el-button>
               </div>
@@ -148,21 +145,25 @@ export default {
 
       // 发表评论输入框的数据
       inputData: "",
-      dialogImageUrl: '',
-      dialogVisible: false,
       // 封面图片的数组
       pictureList:[]
     };
   },
   methods: {
-    // 封面图片
+    // 移出封面图片
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      // console.log(file, fileList);
+      this.pictureList = fileList.map(value=>{
+        return value.response[0]
+      })
     },
-    handlePictureCardPreview(file) {
-      console.log(file)
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
+    // 添加封面图片成功时
+    handleSuccess(response, file, fileList){
+      console.log(fileList)
+      this.pictureList = fileList.map(value=>{
+        return value.response[0]
+      }),
+      console.log(this.pictureList)
     },
 
     // 分页
@@ -191,12 +192,12 @@ export default {
     },
     // 封装获取评论列表的方法
     getDataList(){
-      console.log(this.updataComments)
+      // console.log(this.updataComments)
         this.$axios({
         url: "/posts/comments",
         params: this.updataComments
       }).then(res => {
-        console.log(res);
+        // console.log(res);
         this.commentsList = res.data.data;
         this.total = res.data.total;
       });
@@ -212,11 +213,19 @@ export default {
       this.$axios({
         url: '/comments',
         method: 'POST',
+        headers: {
+                    // 必须要做token前面加上`Bearer `字符串，后面有一个空格的
+                    Authorization: `Bearer ` + this.$store.state.user.userInfo.token
+                },
         data: {
           // 当前文章id
           post: 4,
           content: this.inputData,
+          pics: this.pictureList
         }
+      }).then(res=>{
+        console.log(res)
+        this.getDataList()
       })
     },
     // 回复评论
@@ -238,7 +247,7 @@ export default {
     }).then(res=>{
       // console.log(res)
       this.relatedStrategy = res.data.data
-      console.log(this.relatedStrategy)
+      // console.log(this.relatedStrategy)
     })
   },
   components: {
