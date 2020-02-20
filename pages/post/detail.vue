@@ -35,11 +35,13 @@
         <!-- 发表评论部分 -->
         <div style="font-weight: 400;font-size: 18px;margin-bottom: 20px;">评论</div>
         <el-form class="form">
+          <!-- 输入框 -->
           <el-form-item style="flex:100%">
-            <el-input v-model="form.inputData" placeholder="说点什么吧..."></el-input>
+            <el-input v-model="inputData" placeholder="说点什么吧..."></el-input>
           </el-form-item>
-          <el-form-item style="flex:100%">
-            <div class="list-button">
+          <!-- 上传封面图片 -->
+          <el-form-item style="flex:100%;">
+            <div class="list-button" style="">
               <el-upload
                 action="https://jsonplaceholder.typicode.com/posts/"
                 list-type="picture-card"
@@ -48,8 +50,11 @@
               >
                 <i class="el-icon-plus"></i>
               </el-upload>
+              <el-dialog :visible.sync="dialogVisible">
+                <img width="100%" :src="dialogImageUrl" alt="">
+              </el-dialog>
               <div>
-                <el-button type="primary" size="mini">提交</el-button>
+                <el-button type="primary" size="mini" @click="submit">提交</el-button>
               </div>
             </div>
           </el-form-item>
@@ -104,16 +109,10 @@
     <!-- 右侧相关攻略部分 -->
     <el-aside width="280px">
       <h4 class="aside-title">相关攻略</h4>
-      <div class="recommend-list">
-        <a href="#" class="recommend-item">
+      <div class="recommend-list" v-for="(item,index) in relatedStrategy" :key="index" @click='jump(item)'>
+        <a href="#" class="recommend-item" v-if='item.content'>
           <div class="aside-text">
-            <div>123</div>
-            <p>2020-02-17 10:37 阅读 4</p>
-          </div>
-        </a>
-        <a href="#" class="recommend-item">
-          <div class="aside-text">
-            <div>123</div>
+            <div v-html="item.content"></div>
             <p>2020-02-17 10:37 阅读 4</p>
           </div>
         </a>
@@ -135,7 +134,8 @@ export default {
       detailData: {},
       // 评论列表信息
       commentsList: [],
-
+      // 相关攻略数据
+      relatedStrategy: [],
       // 分页时更新评论的列表
       updataComments: {
         // 当前文章id
@@ -146,10 +146,12 @@ export default {
         _start: 0,
       },
 
-      // 发表评论的数据
-      form: {
-        inputData: ""
-      }
+      // 发表评论输入框的数据
+      inputData: "",
+      dialogImageUrl: '',
+      dialogVisible: false,
+      // 封面图片的数组
+      pictureList:[]
     };
   },
   methods: {
@@ -158,6 +160,7 @@ export default {
       console.log(file, fileList);
     },
     handlePictureCardPreview(file) {
+      console.log(file)
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
     },
@@ -174,7 +177,19 @@ export default {
       this.updataComments._start = (val - 1) * 2;
       this.getDataList()
     },
-    // 获取评论列表
+    // 获取文章详情
+    getArticle(){
+        this.$axios({
+        url: "/posts",
+        params: {
+          id: this.id
+        }
+      }).then(res => {
+        // console.log(res);
+        this.detailData = res.data.data[0];
+      });
+    },
+    // 封装获取评论列表的方法
     getDataList(){
       console.log(this.updataComments)
         this.$axios({
@@ -186,24 +201,45 @@ export default {
         this.total = res.data.total;
       });
     },
-    // 发表一级评论
+    // 点击右侧相关攻略跳转
+    jump(item){
+      // console.log(item)
+      this.id = item.id
+      this.getArticle()
+    },
+    // 提交评论
+    submit(){
+      this.$axios({
+        url: '/comments',
+        method: 'POST',
+        data: {
+          // 当前文章id
+          post: 4,
+          content: this.inputData,
+        }
+      })
+    },
+    // 回复评论
     reply(){
-
+      console.log(this.$store.state.user.userInfo)
     }
   },
   mounted() {
     // 获取文章详情
-    this.$axios({
-      url: "/posts",
-      params: {
-        id: this.id
-      }
-    }).then(res => {
-      console.log(res);
-      this.detailData = res.data.data[0];
-    });
+    this.getArticle()
     // 获取评论列表
     this.getDataList()
+    // 获取推荐文章
+    this.$axios({
+      url: '/posts/recommend',
+      params: {
+        id: 4
+      }
+    }).then(res=>{
+      // console.log(res)
+      this.relatedStrategy = res.data.data
+      console.log(this.relatedStrategy)
+    })
   },
   components: {
     detailComments
@@ -291,6 +327,10 @@ export default {
           justify-content: space-between;
           padding: 20px 0;
           border-bottom: 1px solid #ddd;
+          /deep/img{
+            width: 60px;
+            height: 60px;
+          }
           div {
             font-size: 16px;
             line-height: 1.4em;
