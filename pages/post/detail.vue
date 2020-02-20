@@ -34,6 +34,12 @@
       <div class="commit">
         <!-- 发表评论部分 -->
         <div style="font-weight: 400;font-size: 18px;margin-bottom: 20px;">评论</div>
+        <el-row type="flex" v-if="replyMan">
+          <div class="replyTag">
+            <span>回复&nbsp;&nbsp;@{{replyMan}}</span>&nbsp;&nbsp;
+            <i class="el-icon-close" style="cursor: pointer;" @click="replyMan = ''"></i>
+          </div>
+        </el-row>
         <el-form class="form">
           <!-- 输入框 -->
           <el-form-item style="flex:100%">
@@ -147,7 +153,8 @@ export default {
       inputData: "",
       // 封面图片的数组
       pictureList:[],
-      follow: ''
+      follow: '',
+      replyMan: '',
     };
   },
   methods: {
@@ -230,12 +237,14 @@ export default {
       }).then(res=>{
         // console.log(res)
         this.getDataList()
+        this.inputData = ''
         this.$message.success('提交成功')
       })
     },
     // 回复评论
     reply(item){
-      console.log('12321321')
+      // console.log(item)
+      this.replyMan = item.account.nickname
       this.follow = item.id
       if(!this.inputData){
          this.$message.error('输入不能为空')
@@ -258,30 +267,32 @@ export default {
       }).then(res=>{
         // console.log(res)
         this.getDataList()
+        this.replyMan = ''
+        this.inputData = ''
         this.$message.success('回复成功')
       })
     }
   },
-  mounted() {
-    // 获取文章详情
-    this.getArticle()
-    // 获取评论列表
-    this.getDataList()
-    // 获取推荐文章
-    this.$axios({
-      url: '/posts/recommend',
-      params: {
-        id: 4
-      }
-    }).then(res=>{
-      // console.log(res)
-      this.relatedStrategy = res.data.data
-      // console.log(this.relatedStrategy)
-    })
-  },
-  components: {
-    detailComments
-  }
+    mounted() {
+      // 获取文章详情
+      this.getArticle()
+      // 获取评论列表
+      this.getDataList()
+      // 获取推荐文章
+      this.$axios({
+        url: '/posts/recommend',
+        params: {
+          id: 4
+        }
+      }).then(res=>{
+        // console.log(res)
+        this.relatedStrategy = res.data.data
+        // console.log(this.relatedStrategy)
+      })
+    },
+    components: {
+      detailComments
+    }
 };
 </script>
 
@@ -384,6 +395,21 @@ export default {
   }
   .el-form-item {
     margin-bottom: 10px;
+  }
+  /deep/.replyTag{
+    margin-bottom: 10px;
+    background-color: rgba(144,147,153,.1);
+    border-color: rgba(144,147,153,.2);
+
+    padding: 0 10px;
+    height: 32px;
+    line-height: 30px;
+    font-size: 12px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border: 1px solid rgba(64,158,255,.2);
+    white-space: nowrap;
+    
   }
 }
 </style>
