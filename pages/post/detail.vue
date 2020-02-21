@@ -182,7 +182,7 @@ export default {
     },
     // 当前是第几页
     handleCurrentChange(val) {
-      this.updataComments._start = (val - 1) * 2;
+      this.updataComments._start = (val - 1) * this.updataComments._limit;
       this.getDataList()
     },
     // 获取文章详情
