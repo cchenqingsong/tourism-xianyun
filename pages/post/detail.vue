@@ -69,32 +69,37 @@
         <!-- 为了写样式  在这里把一第一层评论提取出来了-->
         <el-card v-for="(item,index) in commentsList" :key="index" >
           <el-row class="userinfo" type="flex">
-                <!-- 用户小头像 -->
-                <el-avatar size='small' :src="$axios.defaults.baseURL + item.account.defaultAvatar"></el-avatar>
-                <!-- 用户名 -->
-                <span>{{item.account.nickname}}</span>&nbsp;&nbsp;
-                <!-- 评论时间 -->
-                <span>2019-12-14 4:53</span>
-            </el-row>
+            <!-- 用户小头像 -->
+            <el-avatar size='small' :src="$axios.defaults.baseURL + item.account.defaultAvatar"></el-avatar>
+            <!-- 用户名 -->
+            <span>{{item.account.nickname}}</span>&nbsp;&nbsp;
+            <!-- 评论时间 -->
+            <span>2019-12-14 4:53</span>
+          </el-row>
 
           <!-- 组件递归 -->
           <detailComments :data='item.parent' v-if="item.parent" @click="reply"></detailComments>
 
           <!-- 第一层评论的内容 -->
           <!-- 评论文本区域 -->
-            <el-row class="comments-content" >
-                <!-- 遍历图片 -->
-                <img :src="$axios.defaults.baseURL + value.url" alt="" v-for="(value,index1) in item.pics" :key="index1" >
-                <!-- 显示的文本 -->
-                <p style="padding-top:10px;">{{item.content}}</p>
-            </el-row>
-            <!-- 回复按钮 -->
-            <el-row type="flex" style="justify-content: space-between">
-                <div></div>
-                <a href="javascript:;" style="font-size:12px;padding-bottom:10px" @click="reply(item)">回复</a>
-            </el-row>
+          <el-row class="comments-content" >
+            <!-- 遍历图片 -->
+            <img :src="$axios.defaults.baseURL + value.url" alt="" v-for="(value,index1) in item.pics" :key="index1" >
+            <!-- 显示的文本 -->
+            <p style="padding-top:10px;">{{item.content}}</p>
+          </el-row>
+          <!-- 回复按钮 -->
+          <el-row type="flex" style="justify-content: space-between">
+              <div></div>
+              <a href="javascript:;" style="font-size:12px;padding-bottom:10px" @click="reply(item)">回复</a>
+          </el-row>
+
         </el-card>
 
+        <!-- 当没有评论的时候，提示用户 -->
+        <el-row v-if="!total" style="border:1px dashed #ddd;margin:10px 0;">
+            <div style="color:#999;padding:20px 0;text-align:center;font-size:14px;">暂无评论，赶紧抢占沙发！!</div>
+        </el-row>
 
         <!-- 底部分页 -->
         <el-pagination
@@ -104,8 +109,8 @@
           :page-sizes="[2, 4, 6, 8]"
           :page-size="2"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-        ></el-pagination>
+          :total="total">
+        </el-pagination>
       </div>
     </el-main>
 
@@ -131,26 +136,18 @@ export default {
     return {
       // 评论总条数
       total: 1,
-      // 模拟的上个页面传过来的数据id
-      id: 4,
       // 文章数据
       detailData: {},
       // 评论列表信息
       commentsList: [],
       // 相关攻略数据
       relatedStrategy: [],
-      // 分页时更新评论的列表
-      updataComments: {
-        // 当前文章id
-        post: 4,
-        // 需要提交的每页几个数据
-        _limit: 2,
-        // 当前页的数据从第几个开始
-        _start: 0,
-      },
-
+      // 需要提交的每页几个数据
+      _limit: 2,
+      // 当前页的数据从第几个开始
+      _start: 0,
       // 发表评论输入框的数据
-      inputData: "",
+      inputData: '',
       // 封面图片的数组
       pictureList:[],
       follow: '',
@@ -176,46 +173,51 @@ export default {
     // 分页
     // 每页多少条
     handleSizeChange(val) {
-      // console.log(`每页 ${val} 条`);
-      this.updataComments._limit = val;
+      this._limit = val;
       this.getDataList()
     },
     // 当前是第几页
     handleCurrentChange(val) {
-      this.updataComments._start = (val - 1) * this.updataComments._limit;
+      this._start = (val - 1) * this._limit;
       this.getDataList()
     },
-    // 获取文章详情
+    // 封装获取文章详情的方法
     getArticle(){
         this.$axios({
         url: "/posts",
         params: {
-          id: this.id
+          id: this.$route.query.id
         }
       }).then(res => {
-        // console.log(res);
         this.detailData = res.data.data[0];
       });
     },
     // 封装获取评论列表的方法
     getDataList(){
-      // console.log(this.updataComments)
         this.$axios({
         url: "/posts/comments",
-        params: this.updataComments
+        params: {
+          post: this.$route.query.id,
+          _limit: this._limit,
+          _start: this._start,
+        }
       }).then(res => {
-        // console.log(res);
         this.commentsList = res.data.data;
         this.total = res.data.total;
       });
     },
-    // 点击右侧相关攻略跳转
-    jump(item){
-      // console.log(item)
-      this.id = item.id
-      this.getArticle()
+    // 封装获取右侧推荐文章的方法
+    getAnni(){
+        this.$axios({
+        url: '/posts/recommend',
+        params: {
+          id: this.$route.query.id
+        }
+      }).then(res=>{
+        this.relatedStrategy = res.data.data
+      })
     },
-    // 封装一个提交或者回复的按钮方法
+    // 封装提交或者回复的按钮方法
     submit(data){
       this.$axios({
         url: '/comments',
@@ -226,11 +228,20 @@ export default {
                 },
         data
       }).then(res=>{
-        // console.log(res)
         this.getDataList()
         this.inputData = ''
         this.replyMan = ''
         this.$message.success('提交成功')
+      })
+    },
+    // 点击右侧相关攻略跳转
+    jump(item){
+      // 获取点击的文章的id，实现文章的跳转
+      this.$router.push({
+          path: '/post/detail',
+          query: {
+            id: item.id
+          }
       })
     },
     // 提交评论
@@ -245,7 +256,7 @@ export default {
         // 如果是提交评论的话，只需要传入3个字段
         this.submit({
           // 当前文章id
-          post: 4,
+          post: this.$route.query.id,
           content: this.inputData,
           pics: this.pictureList
         })
@@ -254,7 +265,7 @@ export default {
         // 如果是提交评论的话，要多传一个字段
         this.submit({
             // 当前文章id
-            post: 4,
+            post: this.$route.query.id,
             content: this.inputData,
             pics: this.pictureList,
             follow: this.follow
@@ -277,22 +288,27 @@ export default {
       this.follow = item.id
     },
   },
+  // 导航守卫,当路由更新的时候触发
+  beforeRouteUpdate (to, from, next){
+    // 先将路由更改，跳转，再调用方法将页面重新渲染一遍
+    next()
+      // 获取文章详情
+    this.getArticle()
+    // 获取评论列表
+    this.getDataList()
+    // 获取推荐文章
+    this.getAnni()
+  },
+  // 钩子
   mounted() {
+    this._limit = 2
+    this._start = 0
     // 获取文章详情
     this.getArticle()
     // 获取评论列表
     this.getDataList()
     // 获取推荐文章
-    this.$axios({
-      url: '/posts/recommend',
-      params: {
-        id: 4
-      }
-    }).then(res=>{
-      // console.log(res)
-      this.relatedStrategy = res.data.data
-      // console.log(this.relatedStrategy)
-    })
+    this.getAnni()
   },
   // 组件注册
   components: {
