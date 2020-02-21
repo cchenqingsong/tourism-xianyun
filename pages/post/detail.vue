@@ -31,7 +31,7 @@
       </div>
 
       <!-- 评论部分 -->
-      <div class="commit">
+      <div class="commit" ref="jumpTop">
         <!-- 发表评论部分 -->
         <div style="font-weight: 400;font-size: 18px;margin-bottom: 20px;">评论</div>
         <el-row type="flex" v-if="replyMan">
@@ -57,7 +57,7 @@
                 <i class="el-icon-plus"></i>
               </el-upload>
               <div>
-                <el-button type="primary" size="mini" @click="submit">提交</el-button>
+                <el-button type="primary" size="mini" @click="submitComments">提交</el-button>
               </div>
             </div>
           </el-form-item>
@@ -215,12 +215,8 @@ export default {
       this.id = item.id
       this.getArticle()
     },
-    // 提交评论
-    submit(){
-      if(!this.inputData){
-         this.$message.error('输入不能为空')
-         return;
-      }
+    // 封装一个提交或者回复的按钮方法
+    submit(data){
       this.$axios({
         url: '/comments',
         method: 'POST',
@@ -228,71 +224,80 @@ export default {
                     // 必须要做token前面加上`Bearer `字符串，后面有一个空格的
                     Authorization: `Bearer ` + this.$store.state.user.userInfo.token
                 },
-        data: {
+        data
+      }).then(res=>{
+        // console.log(res)
+        this.getDataList()
+        this.inputData = ''
+        this.replyMan = ''
+        this.$message.success('提交成功')
+      })
+    },
+    // 提交评论
+    submitComments(){
+      if(!this.inputData){
+         this.$message.error('输入不能为空')
+         return;
+      }
+      // 判断是直接评论还是回复
+      if(!this.follow){
+        // console.log('是提交')
+        // 如果是提交评论的话，只需要传入3个字段
+        this.submit({
           // 当前文章id
           post: 4,
           content: this.inputData,
           pics: this.pictureList
-        }
-      }).then(res=>{
-        // console.log(res)
-        this.getDataList()
+        })
+      }else{
+        // console.log('是回复')
+        // 如果是提交评论的话，要多传一个字段
+        this.submit({
+            // 当前文章id
+            post: 4,
+            content: this.inputData,
+            pics: this.pictureList,
+            follow: this.follow
+        })
+      }
+      // 评论完成后，将输入框、等等清零
         this.inputData = ''
-        this.$message.success('提交成功')
-      })
+        this.replyMan = ''
+        this.follow = ''
+        // this.pictureList = []
+        // this.handleRemove()
     },
     // 回复评论
     reply(item){
       // console.log(item)
+      // 获取评论区域距离页面顶部的距离
+      // 调用window的方法，将窗口滚动到该坐标
+      window.scrollTo(0,this.$refs.jumpTop.offsetTop)
       this.replyMan = item.account.nickname
       this.follow = item.id
-      if(!this.inputData){
-         this.$message.error('输入不能为空')
-         return;
-      }
-      this.$axios({
-        url: '/comments',
-        method: 'POST',
-        headers: {
-                    // 必须要做token前面加上`Bearer `字符串，后面有一个空格的
-                    Authorization: `Bearer ` + this.$store.state.user.userInfo.token
-                },
-        data: {
-          // 当前文章id
-          post: 4,
-          content: this.inputData,
-          pics: this.pictureList,
-          follow: this.follow
-        }
-      }).then(res=>{
-        // console.log(res)
-        this.getDataList()
-        this.replyMan = ''
-        this.inputData = ''
-        this.$message.success('回复成功')
-      })
-    }
-  },
-    mounted() {
-      // 获取文章详情
-      this.getArticle()
-      // 获取评论列表
-      this.getDataList()
-      // 获取推荐文章
-      this.$axios({
-        url: '/posts/recommend',
-        params: {
-          id: 4
-        }
-      }).then(res=>{
-        // console.log(res)
-        this.relatedStrategy = res.data.data
-        // console.log(this.relatedStrategy)
-      })
     },
-    components: {
-      detailComments
-    }
+  },
+  mounted() {
+    // 获取文章详情
+    this.getArticle()
+    // 获取评论列表
+    this.getDataList()
+    // 获取推荐文章
+    this.$axios({
+      url: '/posts/recommend',
+      params: {
+        id: 4
+      }
+    }).then(res=>{
+      // console.log(res)
+      this.relatedStrategy = res.data.data
+      // console.log(this.relatedStrategy)
+    })
+  },
+  // 组件注册
+  components: {
+    detailComments
+  }
 };
 </script>
 
