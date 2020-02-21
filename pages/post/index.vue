@@ -159,7 +159,7 @@ export default {
         _limit: limit
       }
     }).then(res => {
-      // console.log(res);
+      console.log(res);
       this.total = res.data.total
       this.articleList = res.data.data;
     });
@@ -182,12 +182,6 @@ export default {
       // console.log(res);
       this.cityMenuList = res.data.data;
     });
-    this.getData(0,3)
-  },
-  watch: {
-    bbb() {
-      this.isShow = true;
-    }
   }
 };
 </script>
