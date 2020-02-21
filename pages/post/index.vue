@@ -67,6 +67,7 @@
       <ArticleItem :data="articleList"></ArticleItem>
       <!-- 分页 -->
       <el-pagination
+        v-if="total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="pageIndex"
@@ -181,6 +182,14 @@ export default {
       // console.log(res);
       this.cityMenuList = res.data.data;
     });
+    if (this.$route.query.start && this.$route.query.limit) {
+      this.pageIndex = this.$route.query.start / this.$route.query.limit + 1;
+      this.getData(
+        (this.pageIndex - 1) * this.pageSize,
+        this.pageSize,
+        this.city
+      );
+    }
   }
 };
 </script>

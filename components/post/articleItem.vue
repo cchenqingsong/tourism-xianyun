@@ -3,7 +3,7 @@
     <!-- 三个图片的上下布局 -->
     <el-row v-for="(item,index) in data" :key="index">
       <el-row class="content" v-if="item.images.length >= 2 || item.images.length == 0">
-        <nuxt-link :to="{path:'/post/detail',query:{id:item.id}}">
+        <nuxt-link :to="{path:'/post/detail',query:{id:item.id}}" >
           <h3>{{item.title}}</h3>
           <p class="text" v-html="item.summary"></p>
           <el-row type="flex" class="images">
