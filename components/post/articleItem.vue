@@ -3,7 +3,7 @@
     <!-- 三个图片的上下布局 -->
     <el-row v-for="(item,index) in data" :key="index">
       <el-row class="content" v-if="item.images.length >= 2 || item.images.length == 0">
-        <nuxt-link to="/">
+        <nuxt-link :to="$router.push({path:'/post/detail',query:{id:item.id}})">
           <h3>{{item.title}}</h3>
           <p class="text" v-html="item.summary"></p>
           <el-row type="flex" class="images">
@@ -28,16 +28,16 @@
 
       <!-- 单个图片的左右布局 -->
       <el-row class="content1" type="flex" v-else>
-        <nuxt-link to="/">
-          <img src="/pic_sea.jpeg" alt v-for="(item,index) in item.images" :key="index"/>
+        <nuxt-link :to="$router.push({path:'/post/detail',query:{id:item.id}})">
+          <img src="/pic_sea.jpeg" alt v-for="(item,index) in item.images" :key="index" />
         </nuxt-link>
         <div>
-          <nuxt-link to="/">
+          <nuxt-link :to="$router.push({path:'/post/detail',query:{id:item.id}})">
             <h3>{{item.title}}</h3>
             <p class="text" v-html="item.summary"></p>
           </nuxt-link>
           <el-row type="flex" justify="space-between" class="userInfo">
-              <el-row class="left" type="flex" align="middle">
+            <el-row class="left" type="flex" align="middle">
               <i class="el-icon-location-outline"></i>
               <span>{{item.cityName}}</span>&nbsp;
               <i>by</i>
