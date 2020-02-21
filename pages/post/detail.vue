@@ -16,9 +16,10 @@
         <span>阅读：{{ detailData.watch }}</span>
       </div>
 
-      <!-- 攻略详情部分 -->
+      <!-- 攻略详情内容渲染部分 -->
       <div v-html="detailData.content" class="content"></div>
 
+      <!-- 分享和评论图标样式 -->
       <div class="post-ctrl">
         <div class="post-ctrl1">
           <i class="el-icon-edit-outline icons"></i>
@@ -40,6 +41,7 @@
             <i class="el-icon-close" style="cursor: pointer;" @click="replyMan = ''"></i>
           </div>
         </el-row>
+        <!-- 编辑文本和封面区域 -->
         <el-form class="form">
           <!-- 输入框 -->
           <el-form-item style="flex:100%">
@@ -62,8 +64,6 @@
             </div>
           </el-form-item>
         </el-form>
-
-
 
         <!-- 评论展示部分 -->
         <!-- 为了写样式  在这里把一第一层评论提取出来了-->
