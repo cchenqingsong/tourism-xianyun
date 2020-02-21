@@ -143,9 +143,9 @@ export default {
       // 相关攻略数据
       relatedStrategy: [],
       // 需要提交的每页几个数据
-      _limit: 2,
+      limit: 2,
       // 当前页的数据从第几个开始
-      _start: 0,
+      start: 0,
       // 发表评论输入框的数据
       inputData: '',
       // 封面图片的数组
@@ -157,28 +157,25 @@ export default {
   methods: {
     // 移出封面图片
     handleRemove(file, fileList) {
-      // console.log(file, fileList);
       this.pictureList = fileList.map(value=>{
         return value.response[0]
       })
     },
     // 添加封面图片成功时
     handleSuccess(response, file, fileList){
-      // console.log(fileList)
       this.pictureList = fileList.map(value=>{
         return value.response[0]
       })
-      // console.log(this.pictureList)
     },
     // 分页
     // 每页多少条
     handleSizeChange(val) {
-      this._limit = val;
+      this.limit = val;
       this.getDataList()
     },
     // 当前是第几页
     handleCurrentChange(val) {
-      this._start = (val - 1) * this._limit;
+      this.start = (val - 1) * this.limit;
       this.getDataList()
     },
     // 封装获取文章详情的方法
@@ -198,8 +195,8 @@ export default {
         url: "/posts/comments",
         params: {
           post: this.$route.query.id,
-          _limit: this._limit,
-          _start: this._start,
+          _limit: this.limit,
+          _start: this.start,
         }
       }).then(res => {
         this.commentsList = res.data.data;
@@ -252,7 +249,6 @@ export default {
       }
       // 判断是直接评论还是回复
       if(!this.follow){
-        // console.log('是提交')
         // 如果是提交评论的话，只需要传入3个字段
         this.submit({
           // 当前文章id
@@ -261,7 +257,6 @@ export default {
           pics: this.pictureList
         })
       }else{
-        // console.log('是回复')
         // 如果是提交评论的话，要多传一个字段
         this.submit({
             // 当前文章id
@@ -275,12 +270,9 @@ export default {
         this.inputData = ''
         this.replyMan = ''
         this.follow = ''
-        // this.pictureList = []
-        // this.handleRemove()
     },
     // 回复评论
     reply(item){
-      // console.log(item)
       // 获取评论区域距离页面顶部的距离
       // 调用window的方法，将窗口滚动到该坐标
       window.scrollTo(0,this.$refs.jumpTop.offsetTop)
@@ -301,8 +293,6 @@ export default {
   },
   // 钩子
   mounted() {
-    this._limit = 2
-    this._start = 0
     // 获取文章详情
     this.getArticle()
     // 获取评论列表
