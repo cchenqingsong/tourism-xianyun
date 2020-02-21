@@ -19,18 +19,6 @@
             <span>{{item.type}}</span>
             <i class="el-icon-arrow-right"></i>
           </el-row>
-          <!-- <el-row class="navs" type="flex" justify="space-between" align="middle">
-            <span>推荐城市</span>
-            <i class="el-icon-arrow-right"></i>
-          </el-row>
-          <el-row class="navs" type="flex" justify="space-between" align="middle">
-            <span>奔向海岛</span>
-            <i class="el-icon-arrow-right"></i>
-          </el-row>
-          <el-row class="navs" type="flex" justify="space-between" align="middle">
-            <span>主题推荐</span>
-            <i class="el-icon-arrow-right"></i>
-          </el-row>-->
         </div>
 
         <!-- 隐藏的导航栏 -->
@@ -41,26 +29,6 @@
               <span style="margin:0 10px;">{{item.city}}</span>
               <span>{{item.desc}}</span>
             </el-row>
-            <!-- <el-row class="ranking">
-              <span>2</span>
-              <span>北京</span>
-              <span>世界著名古都和现代化国际城市</span>
-            </el-row>
-            <el-row class="ranking">
-              <span>3</span>
-              <span>北京</span>
-              <span>世界著名古都和现代化国际城市</span>
-            </el-row>
-            <el-row class="ranking">
-              <span>4</span>
-              <span>北京</span>
-              <span>世界著名古都和现代化国际城市</span>
-            </el-row>
-            <el-row class="ranking">
-              <span>5</span>
-              <span>北京</span>
-              <span>世界著名古都和现代化国际城市</span>
-            </el-row>-->
           </el-row>
         </div>
       </el-row>
@@ -75,11 +43,18 @@
     <el-col :span="17">
       <!-- 搜索框 -->
       <el-row type="flex" align="middle">
-        <el-input class="inputSearch" placeholder="请输入想去得地方，比如：‘广州’"></el-input>
-        <el-button class="el-icon-search">&nbsp;搜索</el-button>
+        <el-input class="inputSearch" placeholder="请输入想去得地方，比如：‘广州’" v-model="city"></el-input>
+        <el-button class="el-icon-search" @click="handleSearch">&nbsp;搜索</el-button>
       </el-row>
 
-      <div class="hotlist">推荐： 广州 上海 北京</div>
+      <div class="hotlist">
+        推荐：
+        <el-button
+          v-for="(item,index) in ['广州','上海','北京']"
+          :key="index"
+          @click="handleCelestSearch(item)"
+        >{{item}}</el-button>
+      </div>
 
       <el-row class="strategy" type="flex" justify="space-between">
         <span>推荐攻略</span>
@@ -126,7 +101,9 @@ export default {
       // 当前的页面
       pageIndex: 1,
       // 文章总条数
-      total: 0
+      total: 0,
+      // 绑定搜索框的valud
+      city: ""
     };
   },
   methods: {
@@ -143,32 +120,54 @@ export default {
     // 切换每页条数的函数
     handleSizeChange(val) {
       // console.log(`每页 ${val} 条`);
-      this.pageSize = val
+      this.pageSize = val;
     },
     // 切换页码的函数
     handleCurrentChange(val) {
       // console.log(`当前页: ${val}`);
-      this.pageIndex = val
+      this.pageIndex = val;
+      // 给当前的路由添加参数
+      this.$router.replace({
+        url: this.$route.path,
+        query: {
+          start: (val - 1) * this.pageSize,
+          limit: this.pageSize
+        }
+      });
     },
     // 封装  文章列表的请求
-    getData(start,limit){
-    this.$axios({
-      url: "/posts",
-      params: {
-        _start: start,
-        _limit: limit
-      }
-    }).then(res => {
-      console.log(res);
-      this.total = res.data.total
-      this.articleList = res.data.data;
-    });
+    getData(start, limit, city) {
+      this.$axios({
+        url: "/posts",
+        params: {
+          _start: start,
+          _limit: limit,
+          city: city
+        }
+      }).then(res => {
+        // console.log(res);
+        this.total = res.data.total;
+        this.articleList = res.data.data;
+      });
+    },
+    // 搜索文章的请求
+    handleSearch(item) {
+      if (!this.city) return;
+      this.getData(
+        (this.pageIndex - 1) * this.pageSize,
+        this.pageSize,
+        this.city
+      );
+    },
+    // 点击文字搜索
+    handleCelestSearch(item) {
+      this.getData((this.pageIndex - 1) * this.pageSize, this.pageSize, item);
     }
   },
   computed: {
-    allArticle(){
-      this.getData((this.pageIndex-1)*this.pageSize,this.pageSize)
-      return ''
+    allArticle() {
+      this.getData((this.pageIndex - 1) * this.pageSize, this.pageSize);
+      return "";
     }
   },
   components: {
@@ -205,14 +204,6 @@ export default {
     }
     &:nth-child(n + 2) {
       margin-top: -1px;
-    }
-    &:hover {
-      border-right: 1px solid rgb(255, 255, 255);
-      i {
-        color: #ffc900;
-      }
-
-      // color: #ffc900;
     }
   }
   .recommend {
@@ -284,7 +275,11 @@ export default {
     margin-left: 249px;
   }
 }
-.yellow {
+.post .yellow {
   color: #ffc900;
+  border-right: 1px solid #fff;
+}
+/deep/.el-button--default {
+  padding: 0;
 }
 </style>

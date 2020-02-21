@@ -3,13 +3,11 @@
     <!-- 三个图片的上下布局 -->
     <el-row v-for="(item,index) in data" :key="index">
       <el-row class="content" v-if="item.images.length >= 2 || item.images.length == 0">
-        <nuxt-link :to="$router.push({path:'/post/detail',query:{id:item.id}})">
+        <nuxt-link :to="{path:'/post/detail',query:{id:item.id}}">
           <h3>{{item.title}}</h3>
           <p class="text" v-html="item.summary"></p>
           <el-row type="flex" class="images">
             <img :src="item" alt v-for="(item,index) in item.images" :key="index" />
-            <!-- <img src="/pic_sea.jpeg" alt />
-            <img src="/pic_sea.jpeg" alt />-->
           </el-row>
         </nuxt-link>
         <el-row type="flex" justify="space-between" class="userInfo">
@@ -28,11 +26,11 @@
 
       <!-- 单个图片的左右布局 -->
       <el-row class="content1" type="flex" v-else>
-        <nuxt-link :to="$router.push({path:'/post/detail',query:{id:item.id}})">
+        <nuxt-link :to="{path:'/post/detail',query:{id:item.id}}">
           <img src="/pic_sea.jpeg" alt v-for="(item,index) in item.images" :key="index" />
         </nuxt-link>
         <div>
-          <nuxt-link :to="$router.push({path:'/post/detail',query:{id:item.id}})">
+          <nuxt-link :to="{path:'/post/detail',query:{id:item.id}}">
             <h3>{{item.title}}</h3>
             <p class="text" v-html="item.summary"></p>
           </nuxt-link>
@@ -78,6 +76,7 @@ export default {
   .text {
     margin: 15px 0;
     color: #666;
+    font-size: 14px;
     -webkit-line-clamp: 3;
     display: -webkit-box;
     -webkit-box-orient: vertical;
