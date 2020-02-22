@@ -1,91 +1,92 @@
 <template>
   <div class="herder">
-  <el-row  type="flex" justify="center">
-    <!-- 导航 -->
-    <el-row  class="row-bg" justify="start" align="middle">
-      <el-breadcrumb separator="/" style="    padding: 20px 0;">
-        <el-breadcrumb-item>酒店</el-breadcrumb-item>
-        <el-breadcrumb-item>广州市酒店预订</el-breadcrumb-item>
-      </el-breadcrumb>
+    <el-row type="flex">
+      <!-- 导航 -->
+      <el-row class="row-bg" justify="start" align="middle">
+        <el-breadcrumb separator="/" style="    padding: 20px 0;">
+          <el-breadcrumb-item>酒店</el-breadcrumb-item>
+          <el-breadcrumb-item>广州市酒店预订</el-breadcrumb-item>
+        </el-breadcrumb>
 
-      <el-form ref="form">
-        <!-- 目的地 -->
-        <el-autocomplete
-          :fetch-suggestions="queryDepartSearch"
-          placeholder="目的地"
-          @select="handleDepartSelect"
-          class="el-autocomplete"
-          @blur="moren"
-        ></el-autocomplete>
+        <el-form ref="form">
+     
+          <el-autocomplete
+            :fetch-suggestions="queryDepartSearch"
+            placeholder="目的地"
+            @select="handleDepartSelect"
+            class="el-autocomplete"
+            @blur="moren"
+            v-model="mudi"
+          ></el-autocomplete>
 
-        <!-- 时间选择器 -->
+          <!-- 时间选择器 -->
 
-        <el-date-picker
-          v-model="value6"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="入住日期"
-          end-placeholder="离店日期"
-          @change="handleDate"
-          :disabled="false"
-        >
-        </el-date-picker>
-
-        <!-- 点击下拉 -->
-        <el-input
-          placeholder="人数未定"
-          suffix-icon="el-icon-user"
-          style="width:210px"
-          @focus="isshow = !isshow"
-          :value="form.zongrenshu"
-        >
-        </el-input>
-
-        <!-- 查看价格 -->
-
-        <el-button type="primary">查看价格</el-button>
-      </el-form>
-      <!-- 点击人数框显示 -->
-      <el-card class="box-card" v-show="isshow">
-        <div slot="header" class="clearfix">
-          <span class="meijian">每间</span>
-          <el-select 
-            placeholder="请选择"
-            v-model="form.ruzhurenshu"
-            @change="chufa(form.ruzhurenshu)"
-            style="width:100px;"
+          <el-date-picker
+            v-model="value6"
+            type="daterange"
+            range-separator="-"
+            start-placeholder="入住日期"
+            end-placeholder="离店日期"
+            @change="handleDate"
+            :disabled="false"
           >
-            <el-option
-              v-for="item in zhufang"
-              :key="item"
-              :label="item"
-              :value="item"
-            />
-          </el-select>
-          <el-select
-            placeholder="请选择"
-            v-model="form.ertong"
-            @change="chufa1(form.ertong)"
-            style="width:100px;"
+          </el-date-picker>
+
+          <!-- 点击下拉 -->
+          <el-input
+            placeholder="人数未定"
+            suffix-icon="el-icon-user"
+            style="width:210px"
+            @focus="isshow = !isshow"
+            :value="form.zongrenshu"
           >
-            <el-option
-              v-for="item in zhufang"
-              :key="item"
-              :label="item"
-              :value="item"
-            />
-          </el-select>
-        </div>
-        <el-button
-          style="float: right; padding: 3px 0"
-          type="text"
-          @click="queren"
-          >确认</el-button
-        >
-      </el-card>
+          </el-input>
+
+          <!-- 查看价格 -->
+
+          <el-button type="primary">查看价格</el-button>
+        </el-form>
+        <!-- 点击人数框显示 -->
+        <el-card class="box-card" v-show="isshow">
+          <div slot="header" class="clearfix">
+            <span class="meijian">每间</span>
+            <el-select
+              placeholder="请选择"
+              v-model="form.ruzhurenshu"
+              @change="chufa(form.ruzhurenshu)"
+              style="width:100px;"
+            >
+              <el-option
+                v-for="item in zhufang"
+                :key="item"
+                :label="item"
+                :value="item"
+              />
+            </el-select>
+            <el-select
+              placeholder="请选择"
+              v-model="form.ertong"
+              @change="chufa1(form.ertong)"
+              style="width:100px;"
+            >
+              <el-option
+                v-for="item in zhufang"
+                :key="item"
+                :label="item"
+                :value="item"
+              />
+            </el-select>
+          </div>
+          <el-button
+            style="float: right; padding: 3px 0"
+            type="text"
+            @click="queren"
+            >确认</el-button
+          >
+        </el-card>
+      </el-row>
     </el-row>
-</el-row>
-</div>
+  </div>
 </template>
 
 <script>
@@ -97,6 +98,8 @@ export default {
       //住房人数
       zhufang: [1, 2, 3, 4, 5, 6, 7],
       isshow: false,
+      mudi: "",
+      sousuoCity: [],
       form: {
         //目的地
         mudidi: "",
@@ -115,8 +118,34 @@ export default {
   },
   methods: {
     // 出发城市下拉选择时
-    queryDepartSearch(item) {},
-    handleDepartSelect(value, cb) {},
+    queryDepartSearch(item, cb) {
+      if (!item) {
+        this.sousuoCity = [];
+        cb([]);
+        return;
+      }
+      this.mudi = item;
+      this.$axios({
+        url: "/cities",
+        params: {
+          name: item
+        }
+      }).then(res => {
+        this.sousuoCity = res.data.data;
+        const newData = this.sousuoCity.map(v => {
+          v.value = v.name;
+          // map返回的数组由return组成的
+          return v;
+        });
+
+        cb(newData);
+      });
+    },
+    handleDepartSelect(value) {
+      console.log(value);
+      
+      this.$emit("searchCity", value);
+    },
     //失焦触发
     moren() {},
     //选日期
@@ -133,23 +162,23 @@ export default {
     },
     chufa1(v) {
       this.form.ertong = v + "儿童";
+
+
     }
   }
 };
 </script>
 
 <style scoped lang="less">
-.herder{
-     height: 96px;
-     flex-direction:column;  
+.herder {
+  height: 96px;
+  flex-direction: column;
 }
-  .row-bg {
-    width: 1000px;
-    height: 60px;
-    margin: 0 auto;
-
-  }
-
+.row-bg {
+  width: 1000px;
+  height: 60px;
+  margin: 0 auto;
+}
 
 .els {
   margin-left: 50px;
@@ -170,6 +199,6 @@ export default {
   top: 100px;
   right: 90px;
   font-size: 14px;
-  z-index:99
+  z-index: 99;
 }
 </style>

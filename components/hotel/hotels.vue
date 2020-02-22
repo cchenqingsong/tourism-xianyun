@@ -1,19 +1,21 @@
 <template>
-  <div class="div">
-    <el-row type=" flex" class="herder">
+  <el-row class="div">
+    <el-row
+      type=" flex"
+      class="herder "
+      v-for="(item, index) in cityHoutesList.data"
+      :key="index"
+    >
       <el-col :span="8" class="el-1">
-        <img
-          src="https://p1.meituan.net/hotel/c48d045b9f5bf221c479f55c622c8782154904.jpg%40700w_700h_0e_1l%7Cwatermark%3D1%26%26r%3D1%26p%3D9%26x%3D2%26y%3D2%26relative%3D1%26o%3D20"
-          alt=""
-        />
+        <nuxt-link to="#"> <img :src="item.photos" alt=""/></nuxt-link>
       </el-col>
       <el-col :span="10" class="el-2">
-        <h4>帝豪酒店</h4>
-        <span class="el-5">di hao jiu dian</span>
+        <h4>{{ item.name }}</h4>
+        <span class="el-5">{{ item.alias }}</span>
         <el-row type="flex" class="el-3">
           <el-col :span="10">
             <el-rate
-              v-model="value5"
+              v-model="item.stars"
               disabled
               show-score
               text-color="#ff9900"
@@ -23,7 +25,8 @@
             </el-rate>
           </el-col>
           <el-col :span="7" style="padding:0 8px ">
-            <span style="color: #f90">23</span>评价
+            <span style="color: #f90">{{ item.visits_week }}</span
+            >评价
           </el-col>
           <el-col :span="7" style="padding:0 8px ">
             <span style="color: #f90">23</span>游记
@@ -31,36 +34,29 @@
         </el-row>
         <div class="el-4">
           <i class="el-icon-location"></i>
-          <span>位置：剑川路165号(近龙吴路)</span>
+          <span>位置：{{ item.address }}</span>
         </div>
       </el-col>
 
       <el-col :span="6" style="margin-top: 20px;">
-        <el-table :data="tableData" :show-header="false">
-          <el-table-column prop="brand" label="品牌"> </el-table-column>
-          <el-table-column prop="price" label="价格"> </el-table-column>
-        </el-table>
+        <ul>
+          <li v-for="(it, index) in item.products" :key="index" class="lili">
+            <span class="name">
+              {{ it.name }}
+            </span>
+            <span class="spsp">￥{{ it.price }} <i class="ii">起</i> </span>
+          </li>
+        </ul>
       </el-col>
     </el-row>
-  </div>
+  </el-row>
 </template>
 
 <script>
 export default {
+  props: ["cityHoutesList"],
   data() {
     return {
-      //评分
-      value5: 3.1,
-      tableData: [
-        {
-          price: "￥110起",
-          brand: "携程"
-        },
-
-        { price: "￥110起", brand: "飞猪" },
-
-        { price: "￥110起", brand: "艺龙" }
-      ]
     };
   }
 };
@@ -69,11 +65,13 @@ export default {
 <style scoped lang="less">
 .div {
   width: 1000px;
-  // margin: 0 10px;
   margin: 0 -10px;
-  height: 215px;
+
   padding: 25px 0px;
   .herder {
+    padding-top: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #ccc;
     .el-1 {
       img {
         width: 320px;
@@ -97,6 +95,31 @@ export default {
     }
     .el-5 {
       color: rgb(170, 165, 165);
+    }
+  }
+}
+.lili {
+  display: flex;
+  height: 50px;
+  line-height: 50px;
+  font-size: 14px;
+  position: relative;
+  border-radius: 20px;
+  &:hover {
+    background-color: #f2f4f7;
+  }
+  .name {
+    color: #666;
+    padding-left: 40px;
+  }
+  .spsp {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #f90;
+    padding-right: 30px;
+    i {
+      color: #666;
     }
   }
 }

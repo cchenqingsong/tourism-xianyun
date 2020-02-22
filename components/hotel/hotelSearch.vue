@@ -19,12 +19,17 @@
                   不限
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item v-for="item in list" :key="item">
+                  <el-dropdown-item
+                    v-for="(item, index) in data.levels"
+                    :key="index"
+                  >
                     <el-checkbox-group
                       v-model="checkedCities"
-                      @change="duoxuan"
+                      @change="hotellevel_in1(index)"
                     >
-                      <el-checkbox :label="item">{{ item }}</el-checkbox>
+                      <el-checkbox :label="item.name">{{
+                        item.name
+                      }}</el-checkbox>
                     </el-checkbox-group>
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -40,12 +45,16 @@
                   不限
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item v-for="item in list" :key="item">
-                    <el-checkbox-group
-                      v-model="checkedCities"
-                      @change="duoxuan"
-                    >
-                      <el-checkbox :label="item">{{ item }}</el-checkbox>
+                  <el-dropdown-item
+                    v-for="(item, index) in data.types"
+                    :key="index"
+                  >
+                    <el-checkbox-group v-model="checkedCities">
+                      <el-checkbox
+                        :label="item.name"
+                        @change="hotellevel_in1(index)"
+                        >{{ item.name }}</el-checkbox
+                      >
                     </el-checkbox-group>
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -61,12 +70,17 @@
                   不限
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item v-for="item in list" :key="item">
+                  <el-dropdown-item
+                    v-for="(item, index) in data.assets"
+                    :key="index"
+                  >
                     <el-checkbox-group
                       v-model="checkedCities"
                       @change="duoxuan"
                     >
-                      <el-checkbox :label="item">{{ item }}</el-checkbox>
+                      <el-checkbox :label="item.name">{{
+                        item.name
+                      }}</el-checkbox>
                     </el-checkbox-group>
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -83,15 +97,18 @@
                 </span>
 
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item v-for="item in list" :key="item">
+                  <el-dropdown-item
+                    v-for="(item, index) in data.brands"
+                    :key="index"
+                  >
                     <el-checkbox-group
                       v-model="checkedCities"
                       @change="duoxuan"
                       size="medium"
                       indeterminate:true
                     >
-                      <el-checkbox fill="#cccccc" :label="item">{{
-                        item
+                      <el-checkbox fill="#cccccc" :label="item.name">{{
+                        item.name
                       }}</el-checkbox>
                     </el-checkbox-group>
                   </el-dropdown-item>
@@ -108,18 +125,38 @@
 
 <script>
 export default {
+  props: ["data"],
   data() {
     return {
       jindu: [0, 100],
-      list: ["复选框 A", "单选2", "单选3"],
+      // list: ["复选框 A", "单选2", "单选3"],
       checkedCities: [],
-      moren: "不限"
+      //酒店等级
+      hotellevel_in: [],
+      //住宿类型
+      hoteltype_in: {},
+      hoteltype_in1: [],
+      //酒店设施
+      hotelasset_in: [],
+      //酒店品牌
+      hotelbrand_in: [],
+
+      moren: "不限",
+      obj: {}
     };
+  },
+  mounted() {
+    // console.log(this.data);
   },
   methods: {
     duoxuan(value) {
       let length = value.length;
       this.moren = "已选" + length + "项";
+    },
+    //获取点击到的是哪个
+    hotellevel_in1(index) {
+    
+      
     }
   }
 };

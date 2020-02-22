@@ -23,7 +23,7 @@
                 @select="handleDepartSelect"
                 @blur="handleDepartBlur"
                 class="el-autocomplete"
-                ></el-autocomplete>
+                ></el-autocomplete> 
             </el-form-item>
 
             <el-form-item label="到达城市">
