@@ -58,7 +58,7 @@
 
       <el-row class="strategy" type="flex" justify="space-between">
         <span>推荐攻略</span>
-        <el-button type="primary">
+        <el-button type="primary" @click="$router.push('/post/create')">
           <i class="el-icon-edit"></i>
           写游记
         </el-button>
@@ -162,12 +162,18 @@ export default {
     },
     // 点击文字搜索
     handleCelestSearch(item) {
+      this.city = item
       this.getData((this.pageIndex - 1) * this.pageSize, this.pageSize, item);
     }
   },
   computed: {
     allArticle() {
-      this.getData((this.pageIndex - 1) * this.pageSize, this.pageSize);
+      if(!this.city){
+        this.getData((this.pageIndex - 1) * this.pageSize, this.pageSize)
+      }else {
+this.getData((this.pageIndex - 1) * this.pageSize, this.pageSize,this.city);
+      }
+      
       return "";
     }
   },
@@ -182,6 +188,7 @@ export default {
       // console.log(res);
       this.cityMenuList = res.data.data;
     });
+     
     if (this.$route.query.start && this.$route.query.limit) {
       this.pageIndex = this.$route.query.start / this.$route.query.limit + 1;
       this.getData(
@@ -189,6 +196,8 @@ export default {
         this.pageSize,
         this.city
       );
+    }else {
+      this.getData((this.pageIndex - 1) * this.pageSize, this.pageSize)
     }
   }
 };
