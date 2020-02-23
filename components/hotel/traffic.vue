@@ -42,7 +42,7 @@
           </li>
         </ul>
         <!-- 导航的展示部分 -->
-        <div class="omnirange">
+        <div class="omnirange" v-show="current===0">
           <ul>
             <li
               v-for="(item, index) in [`驾车`,`公交`,`步行`]"
@@ -59,11 +59,17 @@
           <div id="walk_panel" v-show="omnirangeCurrent===2"></div>
         </div>
         <!-- 附近交通的展示部分 -->
-        <div class="nearby_traffic"></div>
+        <div class="nearby_traffic">
+          <div id="traffic_panel" v-show="current===1"></div>
+        </div>
         <!-- 附近的景点的展示部分 -->
-        <div class="scenery"></div>
+        <div class="scenery">
+          <div id="scenery_panel" v-show="current===2"></div>
+        </div>
         <!-- 附近的美食展示部分 -->
-        <div class="cate"></div>
+        <div class="cate">
+          <div id="cate_panel" v-show="current===3"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -73,14 +79,10 @@
 export default {
   data() {
     return {
-      // // 起点
-      // start: "",
-      // // 终点
-      // end: "",
       // 地图实例
       map: "",
       // 当前的tab栏
-      current: 0,
+      current: 1,
       // 导航的tab栏
       omnirangeCurrent: 0
     };
@@ -109,12 +111,30 @@ export default {
         };
         // 绑定终点输入框
         var autoOptions_end = {
-          input:'end_site',     // 绑定终点输入框
+          input: "end_site", // 绑定终点输入框
           city: "汕头" // 限定搜索的范围
         };
         var autoComplete = new AMap.Autocomplete(autoOptions_start);
         var autoComplete = new AMap.Autocomplete(autoOptions_end);
         // 无需再手动执行search方法，autoComplete会根据传入input对应的DOM动态触发search
+      });
+
+      // 搜周边
+      AMap.service(["AMap.PlaceSearch"], function() {
+        //构造地点查询类
+        var placeSearch = new AMap.PlaceSearch({
+          type: "交通设施服务", // 兴趣点类别
+          pageSize: 5, // 单页显示结果条数
+          pageIndex: 1, // 页码
+          city: "广州", // 兴趣点城市
+          citylimit: true, //是否强制限制在设置的城市内搜索
+          map: map, // 展现结果的地图实例
+          panel: "traffic_panel", // 结果列表将在此容器中进行展示。
+          autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
+        });
+
+        var cpoint = [113.3245904, 23.1066805]; //中心点坐标
+        placeSearch.searchNearBy("", cpoint, 2000, function(status, result) {});
       });
     };
   },
@@ -158,6 +178,72 @@ export default {
     // tab栏切换
     handleClick(index) {
       this.current = index;
+      // 根据地图的容器生成地图
+      var map = new AMap.Map("container");
+      if (this.current === 1) {
+        // 搜周边——交通
+        AMap.service(["AMap.PlaceSearch"], function() {
+          //构造地点查询类
+          var placeSearch = new AMap.PlaceSearch({
+            type: "交通设施服务", // 兴趣点类别
+            pageSize: 5, // 单页显示结果条数
+            pageIndex: 1, // 页码
+            city: "广州", // 兴趣点城市
+            citylimit: true, //是否强制限制在设置的城市内搜索
+            map: map, // 展现结果的地图实例
+            panel: "traffic_panel", // 结果列表将在此容器中进行展示。
+            autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
+          });
+
+          var cpoint = [113.3245904, 23.1066805]; //中心点坐标
+          placeSearch.searchNearBy("", cpoint, 2000, function(
+            status,
+            result
+          ) {});
+        });
+      } else if (this.current === 2) {
+        // 搜周边——景点
+        AMap.service(["AMap.PlaceSearch"], function() {
+          //构造地点查询类
+          var placeSearch = new AMap.PlaceSearch({
+            type: "风景名胜", // 兴趣点类别
+            pageSize: 5, // 单页显示结果条数
+            pageIndex: 1, // 页码
+            city: "广州", // 兴趣点城市
+            citylimit: true, //是否强制限制在设置的城市内搜索
+            map: map, // 展现结果的地图实例
+            panel: "scenery_panel", // 结果列表将在此容器中进行展示。
+            autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
+          });
+
+          var cpoint = [113.3245904, 23.1066805]; //中心点坐标
+          placeSearch.searchNearBy("", cpoint, 2000, function(
+            status,
+            result
+          ) {});
+        });
+      } else if (this.current === 3) {
+        // 搜周边——美食
+        AMap.service(["AMap.PlaceSearch"], function() {
+          //构造地点查询类
+          var placeSearch = new AMap.PlaceSearch({
+            type: "餐饮服务", // 兴趣点类别
+            pageSize: 5, // 单页显示结果条数
+            pageIndex: 1, // 页码
+            city: "广州", // 兴趣点城市
+            citylimit: true, //是否强制限制在设置的城市内搜索
+            map: map, // 展现结果的地图实例
+            panel: "cate_panel", // 结果列表将在此容器中进行展示。
+            autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
+          });
+
+          var cpoint = [113.3245904, 23.1066805]; //中心点坐标
+          placeSearch.searchNearBy("", cpoint, 2000, function(
+            status,
+            result
+          ) {});
+        });
+      }
     },
     // 导航tab栏切换
     handleOmnirange(index) {
@@ -251,7 +337,7 @@ export default {
     float: left;
     margin-right: 10px;
     width: 620px;
-    height: 520px;
+    height: 538px;
   }
 
   // 地图右侧内容
@@ -354,6 +440,7 @@ export default {
           }
         }
       }
+      // 导航显示的样式
       .omnirange {
         float: left;
         li {
@@ -379,6 +466,20 @@ export default {
         }
         /deep/.amap-lib-driving {
           border: none !important;
+        }
+      }
+      // 附近交通的样式
+      .nearby_traffic {
+        float: left;
+      }
+      #traffic_panel,
+      #cate_panel,
+      #scenery_panel {
+        width: 300px;
+        height: 360px;
+        overflow: auto;
+        /deep/.amap_lib_placeSearch {
+          border: none;
         }
       }
 
