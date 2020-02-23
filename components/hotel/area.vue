@@ -166,7 +166,7 @@ export default {
 
         var marker = new AMap.Marker({
           position: new AMap.LngLat(arr[i].jing, arr[i].wei), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-          title: arr[i].name,
+          title: arr[i].name
         });
 
         marker.setLabel({
@@ -176,22 +176,12 @@ export default {
         });
         list.push(marker);
       }
-      console.log(arr[0].jing + ":" + arr[0].wei);
-
+      // console.log(arr[0].jing + ":" + arr[0].wei);
       var map = new AMap.Map("ditu", {
-        zoom: 13,
-        center: [arr[0].jing, arr[0].wei],
         resizeEnable: true
-        // autoFitView : true
       });
-      // AMap.event.addDomListener(()=>{
-      //   var map = new AMap.Map("ditu")
-      // })
       map.add(list);
-
-        var newCenter = map.setFitView();
-
-
+      var newCenter = map.setFitView();
       return "";
     }
   }
