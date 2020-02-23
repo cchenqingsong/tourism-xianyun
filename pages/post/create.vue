@@ -1,173 +1,174 @@
 <template>
-   <!-- 页面大布局 -->
-  <div class="All">
-      <el-row type="flex" justify="space-between" >
-           <!-- 主体布局 -->
-           <div class="main">
-               <h2>发表新攻略</h2>
-               <p>分享你的个人游记，让更多人看到！</p>
-               <el-form ref="form" :model="form" >
-                  <!-- 标题 -->
-                  <el-form-item>
-                      <el-input placeholder="请输入标题" v-model="form.title"></el-input>
-                  </el-form-item>
-                   <!-- vu2editor编辑器 -->
-                   <el-form-item class=".quillWrapper">
-                       <client-only>
-                           <vue-editor v-model="form.content"></vue-editor>
-                       </client-only>
-                   </el-form-item>
-                   <!-- 选择城市 -->
-                   <el-form-item label="选择城市" class="checkCity" >
-                      <el-autocomplete 
-                      v-model="form.city"
-                      placeholder="请搜索游玩城市"
-                      :fetch-suggestions="searchVisitCity"
-                      @select="handleSelect"
-                      @blur="handleBlur">
-                      </el-autocomplete>
-                   </el-form-item>
-                    <!-- 发布/保存到草稿 -->
-                    <el-form-item>
-                        <el-button type="primary">发布</el-button>
-                        <span class="save">
-                            或者&nbsp;
-                            <a href="#">保存到草稿箱</a>
-                        </span>
-                    </el-form-item>
-               </el-form>
-           </div>
-           <!-- 右边草稿箱 -->
-           <div class="c-Email">
-               <div class="c-Box">
-                   <h4>草稿箱</h4>
-                   <!-- 草稿内容 -->
-                   <div>
-                       <div class="content">
-                           内容
-                           <i class="iconfont el-icon-edit"></i>
-                       </div>
-                   </div>
-               </div>
-           </div>
+  <div class="create">
+      <el-row>
+        <el-col :span="18" >
+            <h3>发布新攻略</h3>
+            <p style="font-size:12px;color:#999;padding:10px 0;">分享你的个人游记，让更多人看到哦！</p>
+            <el-form>
+                <!-- 标题部分 -->
+                <el-form-item label="标题">
+                    <el-input v-model="title"></el-input>
+                </el-form-item>
+                <!-- 文本编辑器部分 -->
+                <el-form-item>
+                    <client-only>
+                        <vue-editor
+                        v-model="inputText"
+                        placeholder='请输入内容'
+                        ></vue-editor>
+                    </client-only>
+                </el-form-item>
+                <!-- 选择城市部分 -->
+                <el-form-item label="选择城市">
+                    <el-autocomplete
+                    v-model="city"
+                    :fetch-suggestions="querySearchAsync"
+                    @select="handleSelect"
+                    placeholder="请输入内容"
+                    ></el-autocomplete>
+                </el-form-item>
+                <!-- 发布按钮 -->
+                <el-form-item>
+                    <el-button type="success" @click="handlePublish">发布</el-button>&nbsp;&nbsp;
+                    <span>或者&nbsp;&nbsp;<span style="color:orange;cursor:pointer;" @click="setDate">保存到草稿箱</span></span>
+                </el-form-item>
+            </el-form>
+        </el-col>
+        <el-col :span="4" :offset="2">
+            <el-badge :value="$store.state.post.draft.length" class="item" >
+                <el-button disabled style="font-size:16px;color:#000;" size="small" type="success">草稿箱</el-button>
+            </el-badge>
+            <div style="width:150px;">
+                <div style="padding:3px 0;" v-for="(item,index) in $store.state.post.draft" :key="index">
+                    <i class="el-icon-delete" style="cursor:pointer;" @click="del(index)"></i>&nbsp;&nbsp;
+                    <span>{{item.title}}</span>&nbsp;&nbsp;
+                    <i class="el-icon-edit" style="cursor:pointer;" @click="reset(item)"></i>
+                </div>
+            </div>
+        </el-col>
       </el-row>
   </div>
 </template>
 
 <script>
 export default {
-    data(){
+    data () {
         return {
-            form:{
-                title:'',
-                content:'',
-                city:''
-            },
-            // 城市列表
-            cityData:[]
-        };
+            // 文章标题
+            title:'',
+            // 文章内容
+            inputText:'',
+            // 城市名字
+            city:'',
+            // 城市id
+            cityCode: '',
+        }
     },
-    methods:{
-        // 搜索游玩城市时触发
-        searchVisitCity(value,callback){
-            if(!value){
-                //如果输入框，没有值就不执行 并且不显示下拉列表
-                this.cityData = [];
-                callback([]);
-                return;
-            }
-            // 有value值才发请求 根据value值获取城市列表
-            this.$axios({
-                url:"/airs/city",
-                methods:"GET",
-                params:{
-                    name:value
+    methods: {
+        // 服务端搜索
+        querySearchAsync(queryString, callback){  // queryString是输入框的文本,callback是回调函数展示返回的数据
+            // 如果输入框为空的时候，不会进行搜索城市
+                if(!queryString){
+                    callback([])
+                    return;
                 }
-            }).then(res =>{
-                console.log(res);
-                const { data } = res.data;
-                // 下拉提示列表必须要有value字段 
-                const newData = data.map(v =>{
-                    v.value = v.name.replace("市","");
-                    return v;
-                });
-                this.cityData = newData;
-                callback(newData);
-            });
+            // 调用封装的方法获取搜索城市的数据
+            this.$store.dispatch('user/searchCity',queryString).then(res=>{
+                callback(res)
+                // 当如果返回的搜索内容只有一个的时候，为了避免用户不点击,默认给到第一个城市
+                if(res.length === 1){
+                    this.cityCode = res[0].id
+                }
+            })
         },
-        //点击选择下拉列表城市时触发
+        // 下拉选择
         handleSelect(item){
-            this.form.city = item.value;
+            this.cityCode = item.id
         },
-        // 失焦触发事件
-        handleBlur(){
-            // console.log("1122")
-            if(this.cityData.length === 0){
+        // 为空的判断
+        rules(){
+            // 判断标题不能为空
+            if(!this.title ){
+                this.$message.error('请输入标题')
                 return;
             }
-            //失焦后，如果用户不选下拉列表的城市 就默认获取数组中第一个城市
-            console.log(this.cityData);
-            this.form.city = this.cityData[0].value;
+            // 判断文本内容不能为空
+            if(!this.inputText){
+                this.$message.error('请输入内容')
+                return;
+            }
+            // 判断城市不能为空
+            if(!this.city){
+                this.$message.error('请输入城市')
+                return;
+            }
+        },
+        // 提交发布
+        handlePublish(){
+            // 判断非空
+            this.rules()
+            // 调用接口，实现提交
+            this.$axios({
+                url: '/posts',
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ` + this.$store.state.user.userInfo.token
+                },
+                data: {
+                    content: this.inputText,
+                    title: this.title,
+                    city: this.cityCode
+                }
+            }).then(res=>{
+                this.$message.success(res.data.message)
+                // 完成之后清空三个框的内容
+                this.title = '',
+                this.inputText = '',
+                this.city = '',
+                this.cityCode = ''
+            })
+        },
+        // 保存到草稿箱
+        setDate(){
+            // 判断非空
+            this.rules()
+            // 存储到store里面
+            this.$store.commit('post/setDraft',
+                {title:this.title,
+                inputText:this.inputText,
+                city:this.city,
+                cityCode: this.cityCode,})
+            // 储存完毕之后，将数据清空
+            this.title = '',
+            this.inputText = '',
+            this.city = '',
+            this.cityCode = ''
+        },
+        // 复位到输入框
+        reset(item){
+            this.title = item.title
+            this.inputText = item.inputText
+            this.city = item.city
+            this.cityCode = item.cityCode
+        },
+        // 删除当前的草稿
+        del(index){
+            // 调用store方法实现删除
+            this.$store.commit('post/delDraft',index)
         }
     }
 }
 </script>
 
-<style scoped lang="less">
-.All{
-    width: 1000px;
-    margin: 0 auto;
-    padding: 20px 0;
-    .main{
-        h2{
-            font-weight: normal;
-            font-size: 22px;
-            margin: 0 0 10px 10px;
-        }
-        p{
-            font-size: 12px;
-            color:#999;
-            margin: 0 0 10px 10px;
-        }
-        .quillWrapper{
-            height: 400px;
-            width: 700px;
-        }
-        .checkCity{
-            margin-top: 110px;
-            margin-left: 3px;
-        }
-        .save{
-            font-size: 14px;
-            margin-left: 10px;
-            a{
-                color: orange;
-                &:hover{
-                    text-decoration: underline;
-                }
-            }
-            
-        }
+<style lang='less' scoped>
+    .create{
+        margin: 0 auto;
+        width: 1000px;
+        padding: 20px 0;
     }
-}
-.c-Email{
-    margin-left: 50px;
-    width: 300px;
-    .c-Box{
-        border: 1px solid #ddd;
-        padding: 10px;
-        h4{
-            margin-bottom: 10px;
-            font-weight: 400;
-            color: #666;
-        }
-        .content{
-            cursor: pointer;
-            &:hover{
-                color: orange;
-            }
-        }
+    .item {
+        margin-top: 10px;
+        margin-right: 40px;
+        padding-bottom: 20px; 
     }
-}
-
 </style>
