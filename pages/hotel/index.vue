@@ -2,8 +2,9 @@
   <div>
     <el-row type="flex" class="herder">
       <Search @searchCity="searchCity" />
-      <Area @cityID="gethotel" :zuobiao="zuobiao" />
-      <HotelSearch :data="data" />
+      <Area />
+      <!-- @cityID="gethotel" -->
+      <HotelSearch :data="data" @getSearchs="getSearchs" />
       <Hotels :cityHoutesList="cityHoutesList" />
       <!-- 分页 -->
       <el-pagination
@@ -44,14 +45,18 @@ export default {
       //获取到当前城市酒店与条数
       cityHoutesList: [],
       total: 50,
+      total1: 50,
       cityId: 0,
       nextStart: null,
+      nextStart1: null,
       //每次返回条数
       tiao: 10,
       //搜索城市的id
       sousuoCityId: 0,
       // 坐标
-      zuobiao: []
+      zuobiao: [],
+      //用于筛选的路径
+      parameters: ""
     };
   },
   mounted() {
@@ -59,17 +64,35 @@ export default {
     this.$axios({
       url: "/hotels/options"
     }).then(res => {
+      // console.log(res);
       this.data.levels = res.data.data.levels;
+      this.data.levels.map(v => {
+        v.names = "levels";
+      });
       this.data.types = res.data.data.types;
       this.data.assets = res.data.data.assets;
       this.data.brands = res.data.data.brands;
     });
+    let { city } = this.$route.query;
+    this.cityId = city;
+    console.log(this.cityId);
+
+    this.$axios({
+      url: `/hotels`,
+      params: this.$route.query
+    }).then(res => {
+      this.cityHoutesList = res.data;
+      console.log(this.cityHoutesList);
+      
+      this.cityHoutesList.data.forEach(e => {});
+      this.total = this.cityHoutesList.total;
+      this.nextStart = res.data.nextStart;
+    });
   },
+
   methods: {
     gethotel(cityID) {
       this.cityId = cityID;
-
-      //请求城市列表
       this.getCity(this.cityId);
     },
 
@@ -81,39 +104,73 @@ export default {
         }
       }).then(res => {
         this.cityHoutesList = res.data;
-        console.log(this.cityHoutesList);
-
         this.cityHoutesList.data.forEach(e => {
-          this.zuobiao.push(e.location);
+          // this.zuobiao.push(e.location);
         });
         this.total = this.cityHoutesList.total;
         this.nextStart = res.data.nextStart;
       });
     },
     searchCity(value) {
-      this.$router.push({ name: "hotel", query: { cityName: value.value } });
       this.$store.commit("houtel/setCityjingdian", value.scenics);
       console.log(value);
       this.getCity(value.id);
       this.sousuoCityId = value.id;
     },
 
+    getSearchs(data) {
+      let sss = true;
+      let parameter = `city=${this.cityId}`;
+      for (let key in data) {
+        if (key === "price_lt") {
+          parameter += `&${key}=${data[key]}`;
+        } else if (data[key].length !== 0) {
+          data[key].forEach(v => {
+            parameter += `&${key}=${v}`;
+          });
+        }
+      }
+      this.$axios({
+        url: `/hotels?${parameter}`
+      }).then(res => {
+        this.cityHoutesList = [];
+        this.cityHoutesList = res.data;
+        this.total = this.cityHoutesList.total;
+        this.nextStart1 = res.data.nextStart;
+        // console.log(this.nextStart1);
+
+        // console.log(this.cityHoutesList);
+      });
+      //保存用于上下页请求
+      this.parameters = parameter;
+      return !sss;
+    },
+
     //每次点击上下页触发
 
     shang(value) {
-      if (this.sousuoCityId === 0) {
+      // this.cityHoutesList = [];
+      if (this.getSearchs() == false) {
+        let start1 = this.nextStart1 * value - this.nextStart1;
+        this.$axios({
+          url: `/hotels?${this.parameters}&_start=${start1}`
+        }).then(res => {
+          this.cityHoutesList = res.data;
+          this.total = this.cityHoutesList.total;
+        });
+      } else if (this.sousuoCityId === 0) {
         this.$axios({
           url: "/hotels",
           params: {
             city: this.cityId,
-            // _limit: this.tiao,
-            // ,控制下次返回的条数 如果返回5条 就显示5条
             _start: this.nextStart * value - this.nextStart
           }
         }).then(res => {
           this.cityHoutesList = res.data;
+          this.total = this.cityHoutesList.total;
         });
-      } else {
+      } //如果大于零 证明这个是从搜索城市进来的
+      else if (this.sousuoCityId > 0 && !this.getSearchs()) {
         this.$axios({
           url: "/hotels",
           params: {
@@ -122,11 +179,26 @@ export default {
           }
         }).then(res => {
           this.cityHoutesList = res.data;
+          this.total = this.cityHoutesList.total;
         });
-      }
+      } //如果这个返回的是true,那么证明这个函数被执行过 所有要用到的请求数据不同
     },
+
     xia(value) {
-      if (this.sousuoCityId == 0) {
+      // this.cityHoutesList = [];
+      if (this.getSearchs()) {
+        console.log(1);
+
+        let start = this.nextStart1 * value - this.nextStart1;
+        this.$axios({
+          url: `/hotels?${this.parameters}&_start=${start}`
+        }).then(res => {
+          this.cityHoutesList = res.data;
+          this.total = this.cityHoutesList.total;
+        });
+      } else if (this.sousuoCityId == 0) {
+        console.log(2);
+
         this.$axios({
           url: "/hotels",
           params: {
@@ -135,8 +207,10 @@ export default {
           }
         }).then(res => {
           this.cityHoutesList = res.data;
+          this.total = this.cityHoutesList.total;
         });
       } else {
+        console.log(3);
         this.$axios({
           url: "/hotels",
           params: {
@@ -145,6 +219,7 @@ export default {
           }
         }).then(res => {
           this.cityHoutesList = res.data;
+          this.total = this.cityHoutesList.total;
         });
       }
     }

@@ -9,7 +9,6 @@
         </el-breadcrumb>
 
         <el-form ref="form">
-     
           <el-autocomplete
             :fetch-suggestions="queryDepartSearch"
             placeholder="目的地"
@@ -143,7 +142,7 @@ export default {
     },
     handleDepartSelect(value) {
       console.log(value);
-      
+
       this.$emit("searchCity", value);
     },
     //失焦触发
@@ -162,8 +161,6 @@ export default {
     },
     chufa1(v) {
       this.form.ertong = v + "儿童";
-
-
     }
   }
 };

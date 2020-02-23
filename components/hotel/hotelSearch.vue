@@ -7,7 +7,7 @@
           <span>价格</span>
           <span>0-{{ jindu * 40 }}</span>
         </el-row>
-        <el-slider v-model="jindu"> </el-slider>
+        <el-slider :format-tooltip="formatTooltip" v-model="jindu"> </el-slider>
       </el-col>
       <el-col :span="18" class="four">
         <el-row type="flex" class="ret">
@@ -25,7 +25,7 @@
                   >
                     <el-checkbox-group
                       v-model="checkedCities"
-                      @change="hotellevel_in1(index)"
+                      @change="hotellevel_in1(item.id, 'hotellevel_in')"
                     >
                       <el-checkbox :label="item.name">{{
                         item.name
@@ -49,12 +49,13 @@
                     v-for="(item, index) in data.types"
                     :key="index"
                   >
-                    <el-checkbox-group v-model="checkedCities">
-                      <el-checkbox
-                        :label="item.name"
-                        @change="hotellevel_in1(index)"
-                        >{{ item.name }}</el-checkbox
-                      >
+                    <el-checkbox-group
+                      v-model="checkedCities"
+                      @change="hotellevel_in1(item.id, 'hoteltype_in')"
+                    >
+                      <el-checkbox :label="item.name">{{
+                        item.name
+                      }}</el-checkbox>
                     </el-checkbox-group>
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -76,7 +77,7 @@
                   >
                     <el-checkbox-group
                       v-model="checkedCities"
-                      @change="duoxuan"
+                      @change="hotellevel_in1(item.id, 'hotelasset_in')"
                     >
                       <el-checkbox :label="item.name">{{
                         item.name
@@ -103,7 +104,7 @@
                   >
                     <el-checkbox-group
                       v-model="checkedCities"
-                      @change="duoxuan"
+                      @change="hotellevel_in1(item.id, 'hotelbrand_in')"
                       size="medium"
                       indeterminate:true
                     >
@@ -128,35 +129,46 @@ export default {
   props: ["data"],
   data() {
     return {
-      jindu: [0, 100],
+      name: ["hotellevel"],
+      jindu: 100,
       // list: ["复选框 A", "单选2", "单选3"],
       checkedCities: [],
-      //酒店等级
-      hotellevel_in: [],
-      //住宿类型
-      hoteltype_in: {},
-      hoteltype_in1: [],
-      //酒店设施
-      hotelasset_in: [],
-      //酒店品牌
-      hotelbrand_in: [],
+
+      objData: {
+        price_lt: 4000,
+        //酒店等级
+        hotellevel_in: [],
+        //住宿类型
+        hoteltype_in: [],
+        //酒店设施
+        hotelasset_in: [],
+        //酒店品牌
+        hotelbrand_in: []
+      },
 
       moren: "不限",
       obj: {}
     };
   },
-  mounted() {
-    // console.log(this.data);
-  },
+  mounted() {},
   methods: {
     duoxuan(value) {
       let length = value.length;
       this.moren = "已选" + length + "项";
     },
     //获取点击到的是哪个
-    hotellevel_in1(index) {
-    
-      
+    hotellevel_in1(id, arrName) {
+      let namss = this.objData[arrName];
+      if (namss.indexOf(id) != -1) {
+        namss.splice(namss.indexOf(id), 1);
+      } else {
+        namss.push(id);
+      }
+      this.$emit("getSearchs", this.objData);
+    },
+    formatTooltip(value) {
+      this.objData.price_lt = value * 40;
+      return value * 40;
     }
   }
 };

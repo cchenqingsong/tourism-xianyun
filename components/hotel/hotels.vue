@@ -7,10 +7,18 @@
       :key="index"
     >
       <el-col :span="8" class="el-1">
-        <nuxt-link to="#"> <img :src="item.photos" alt=""/></nuxt-link>
+        <nuxt-link
+          :to="{ path: '/hotel/hotelDetail', query: { city: item.id } }"
+        >
+          <img :src="item.photos" alt=""
+        /></nuxt-link>
       </el-col>
       <el-col :span="10" class="el-2">
-        <h4>{{ item.name }}</h4>
+        <nuxt-link
+          :to="{ path: '/hotel/hotelDetail', query: { city: item.id } }"
+        >
+          <h4>{{ item.name }}</h4></nuxt-link
+        >
         <span class="el-5">{{ item.alias }}</span>
         <el-row type="flex" class="el-3">
           <el-col :span="10">
@@ -56,8 +64,7 @@
 export default {
   props: ["cityHoutesList"],
   data() {
-    return {
-    };
+    return {};
   }
 };
 </script>

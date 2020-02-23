@@ -116,7 +116,7 @@ export default {
               "您当前所在城市：" + this.cityName;
             //地图显示当前城市
             map.setBounds(citybounds);
-            this.$router.push({ name: "hotel", query: { cityName: result.city } });
+
             //请求景点
             this.$axios({
               url: "/cities",
@@ -128,8 +128,12 @@ export default {
               this.$store.commit(
                 "houtel/setCityjingdian",
                 res.data.data[0].scenics
-              );
-              this.$emit("cityID", this.jingdian[0].city);
+              )
+              this.$router.push({
+                name: "hotel",
+                query: { city: this.jingdian[0].city }
+              });
+              // this.$emit("cityID", this.jingdian[0].city);
             });
           } else {
             document.getElementById("info").innerHTML = result.info;
