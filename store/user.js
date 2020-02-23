@@ -67,13 +67,21 @@ export const actions = {
             // console.log("store中的：", res);
             return res;
         })
-        
-        // .then(res1 => {
-        //     console.log(res1); // 123
-        //     return 456;
-        // }).then(res2 => {
-        //     console.log(res2) // 456
-        //     return 789;
-        // })
+    },
+
+    //  机票城市筛选
+    searchCity(store,data){
+        return  this.$axios({
+            url:'/airs/city',
+            params:{
+                name: data
+            }
+        }).then(res=>{
+                const newData = res.data.data.map(item=>{
+                        item.value = item.name.replace('市','')
+                        return item
+                })
+            return newData;
+        })
     }
 }
