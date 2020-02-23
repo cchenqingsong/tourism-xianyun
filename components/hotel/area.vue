@@ -12,72 +12,62 @@
               class="jingdian"
               v-for="(item, index) in $store.state.houtel.cityjingdian"
               :key="index"
-              >{{ item.name }}</nuxt-link
-            >
+            >{{ item.name }}</nuxt-link>
           </div>
-          <a href="#" @click="isShow = !isShow"
-            ><i
-              class="el-icon-d-arrow-right"
-              style="transform: rotate(90deg)"
-            ></i>
-            等多个地区</a
-          >
+          <a href="#" @click="isShow = !isShow">
+            <i class="el-icon-d-arrow-right" style="transform: rotate(90deg)"></i>
+            等多个地区
+          </a>
         </el-col>
       </el-row>
       <!-- 均价 -->
       <el-row class="huangguan">
-        <el-col :span="3">均价<el-badge class="mark" value="?" />:</el-col>
+        <el-col :span="3">
+          均价
+          <el-badge class="mark" value="?" />:
+        </el-col>
         <el-col :span="21">
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="哈哈哈哈哈哈"
-            placement="bottom-start"
-          >
-            <span
-              ><i class="iconfont iconhuangguan"></i
-              ><i class="iconfont iconhuangguan"></i
-              ><i class="iconfont iconhuangguan"></i>￥332</span
-            >
+          <el-tooltip class="item" effect="dark" content="哈哈哈哈哈哈" placement="bottom-start">
+            <span>
+              <i class="iconfont iconhuangguan"></i>
+              <i class="iconfont iconhuangguan"></i>
+              <i class="iconfont iconhuangguan"></i>￥332
+            </span>
           </el-tooltip>
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="哈哈哈哈哈哈"
-            placement="bottom-start"
-          >
-            <span
-              ><i class="iconfont iconhuangguan"></i
-              ><i class="iconfont iconhuangguan"></i
-              ><i class="iconfont iconhuangguan"></i>￥532</span
-            >
+          <el-tooltip class="item" effect="dark" content="哈哈哈哈哈哈" placement="bottom-start">
+            <span>
+              <i class="iconfont iconhuangguan"></i>
+              <i class="iconfont iconhuangguan"></i>
+              <i class="iconfont iconhuangguan"></i>￥532
+            </span>
           </el-tooltip>
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="哈哈哈哈哈哈"
-            placement="bottom-start"
-          >
-            <span
-              ><i class="iconfont iconhuangguan"></i
-              ><i class="iconfont iconhuangguan"></i
-              ><i class="iconfont iconhuangguan"></i>￥882</span
-            >
+          <el-tooltip class="item" effect="dark" content="哈哈哈哈哈哈" placement="bottom-start">
+            <span>
+              <i class="iconfont iconhuangguan"></i>
+              <i class="iconfont iconhuangguan"></i>
+              <i class="iconfont iconhuangguan"></i>￥882
+            </span>
+            <span>{{mapData}}</span>
           </el-tooltip>
         </el-col>
       </el-row>
     </el-row>
 
     <!-- 右边组件 -->
-    <el-row class="right" id="ditu">
-      <p id="info"></p>
-    </el-row>
+    <el-row class="right" id="ditu"></el-row>
+    <p id="info"></p>
   </el-row>
 </template>
 
 <script>
 export default {
-  props: ["zuobiao"],
+  // props: ["zuobiao",'hotelList'],
+  props: {
+    hotelList: {
+      type: Array,
+      default: []
+    }
+  },
   watch: {},
   data() {
     return {
@@ -100,47 +90,110 @@ export default {
     jsapi.src = url;
     document.head.appendChild(jsapi);
     window.onLoad = () => {
-      var map = new AMap.Map("ditu");
-      AMap.plugin("AMap.CitySearch", () => {
-        var citySearch = new AMap.CitySearch();
-        citySearch.getLocalCity((status, result) => {
-          console.log(result);
-
-          if (status === "complete" && result.info === "OK") {
-            // 查询成功，result即为当前所在城市信息
-            this.cityName = result.city;
-            this.cityId = result.infocode;
-            this.$emit("cityData");
-            var citybounds = result.bounds;
-            document.getElementById("info").innerHTML =
-              "您当前所在城市：" + this.cityName;
-            //地图显示当前城市
-            map.setBounds(citybounds);
-            this.$router.push({ name: "hotel", query: { cityName: result.city } });
-            //请求景点
-            this.$axios({
-              url: "/cities",
-              params: {
-                name: this.cityName
-              }
-            }).then(res => {
-              this.jingdian = res.data.data[0].scenics;
-              this.$store.commit(
-                "houtel/setCityjingdian",
-                res.data.data[0].scenics
-              );
-              this.$emit("cityID", this.jingdian[0].city);
-            });
-          } else {
-            document.getElementById("info").innerHTML = result.info;
-          }
-        });
+      var map = new AMap.Map("ditu", {
+        resizeEnable: true
       });
+
+      // this.init()
+      // if(this.hotelList.length == 0) return
+
+      // AMap.plugin("AMap.CitySearch", () => {
+      //   var citySearch = new AMap.CitySearch();
+      //   citySearch.getLocalCity((status, result) => {
+      //     console.log(result);
+
+      //     if (status === "complete" && result.info === "OK") {
+      //       // 查询成功，result即为当前所在城市信息
+      //       this.cityName = result.city;
+      //       this.cityId = result.infocode;
+      //       this.$emit("cityData");
+      //       var citybounds = result.bounds;
+      //       document.getElementById("info").innerHTML =
+      //         "您当前所在城市：" + this.cityName;
+      //       //地图显示当前城市
+      //       map.setBounds(citybounds);
+      //       this.$router.push({
+      //         name: "hotel",
+      //         query: { cityName: result.city }
+      //       });
+      //       //请求景点
+      //       this.$axios({
+      //         url: "/cities",
+      //         params: {
+      //           name: this.cityName
+      //         }
+      //       }).then(res => {
+      //         this.jingdian = res.data.data[0].scenics;
+      //         this.$store.commit(
+      //           "houtel/setCityjingdian",
+      //           res.data.data[0].scenics
+      //         );
+      //         this.$emit("cityID", this.jingdian[0].city);
+      //       });
+      //     } else {
+      //       document.getElementById("info").innerHTML = result.info;
+      //     }
+      //   });
+      // });
     };
   },
   // },
-  methods: {
-    init() {}
+  methods: {},
+  computed: {
+    mapData() {
+      if (this.hotelList.length == 0) return;
+      let list = [];
+      let arr = this.hotelList.map(v => {
+        return {
+          jing: v.location.longitude,
+          wei: v.location.latitude,
+          name: v.name
+        };
+      });
+      // console.log(arr);
+      for (let i = 0; i < arr.length; i++) {
+        // // 创建一个 Icon
+        // var startIcon = new AMap.Icon({
+        //     // 图标尺寸
+        //     size: new AMap.Size(25, 34),
+        //     // 图标的取图地址
+        //     image: '//a.amap.com/jsapi_demos/static/demo-center/icons/dir-marker.png',
+        //     // 图标所用图片大小
+        //     imageSize: new AMap.Size(135, 40),
+        //     // 图标取图偏移量
+        //     imageOffset: new AMap.Pixel(-9, -3)
+        // });
+
+        var marker = new AMap.Marker({
+          position: new AMap.LngLat(arr[i].jing, arr[i].wei), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+          title: arr[i].name,
+        });
+
+        marker.setLabel({
+          offset: new AMap.Pixel(0, 0), //设置文本标注偏移量
+          content: "<div class='info'>" + arr[i].name + "</div>", //设置文本标注内容
+          direction: "right" //设置文本标注方位
+        });
+        list.push(marker);
+      }
+      console.log(arr[0].jing + ":" + arr[0].wei);
+
+      var map = new AMap.Map("ditu", {
+        zoom: 13,
+        center: [arr[0].jing, arr[0].wei],
+        resizeEnable: true
+        // autoFitView : true
+      });
+      // AMap.event.addDomListener(()=>{
+      //   var map = new AMap.Map("ditu")
+      // })
+      map.add(list);
+
+        var newCenter = map.setFitView();
+
+
+      return "";
+    }
   }
 };
 </script>
@@ -196,5 +249,9 @@ export default {
 .jingdian {
   padding-right: 4px;
   margin-right: 14px;
+}
+/deep/.amap-marker-label {
+  border: 0;
+  background-color: #fff;
 }
 </style>

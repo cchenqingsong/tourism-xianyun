@@ -2,7 +2,7 @@
   <div>
     <el-row type="flex" class="herder">
       <Search @searchCity="searchCity" />
-      <Area @cityID="gethotel" :zuobiao="zuobiao" />
+      <Area @cityID="gethotel" :hotelList="hotelList" />
       <HotelSearch :data="data" />
       <Hotels :cityHoutesList="cityHoutesList" />
       <!-- 分页 -->
@@ -14,8 +14,7 @@
         next-text="下一页>"
         @prev-click="shang"
         @next-click="xia"
-      >
-      </el-pagination>
+      ></el-pagination>
     </el-row>
   </div>
 </template>
@@ -51,7 +50,9 @@ export default {
       //搜索城市的id
       sousuoCityId: 0,
       // 坐标
-      zuobiao: []
+      zuobiao: [],
+      // 酒店列表
+      hotelList: []
     };
   },
   mounted() {
@@ -82,6 +83,7 @@ export default {
       }).then(res => {
         this.cityHoutesList = res.data;
         console.log(this.cityHoutesList);
+        this.hotelList = res.data.data;
 
         this.cityHoutesList.data.forEach(e => {
           this.zuobiao.push(e.location);
