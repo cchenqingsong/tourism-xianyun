@@ -1,6 +1,6 @@
 <template>
       <div class="comments">
-          <detailComments :data='data.parent' v-if="data.parent" style="width:100%;"></detailComments>
+          <detailComments :data='data.parent' v-if="data.parent" style="width:100%;" @click="reply"></detailComments>
                 <!-- 评论个人信息区域 -->
             <el-row class="userinfo" type="flex" style="padding-bottom:5px;">
                 <!-- 用户小头像 -->
@@ -44,7 +44,8 @@ export default {
     },
     methods: {
         reply(){
-            console.log(this.data)
+            // console.log(this.data)
+            this.$emit('click',this.data)
         }
     }
 }

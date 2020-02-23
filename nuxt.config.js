@@ -5,7 +5,7 @@ export default {
   ** Headers of the page
   */
   head: {
-    title: '世界上最大的旅游网站',
+    title: '努力一半，月薪过万',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -33,7 +33,8 @@ export default {
   plugins: [
     '@/plugins/element-ui',
     { src: '@/plugins/localStorage', ssr: false },
-    "@/plugins/axios"
+    "@/plugins/axios",
+    { src: '~/plugins/vue2editor.js', mode: 'client' }
   ],
   /*
   ** Nuxt.js dev-modules
