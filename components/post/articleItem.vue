@@ -5,7 +5,7 @@
       <el-row class="content" v-if="item.images.length >= 2 || item.images.length == 0">
         <nuxt-link :to="{path:'/post/detail',query:{id:item.id}}" >
           <h3>{{item.title}}</h3>
-          <p class="text" v-html="item.summary"></p>
+          <div class="text" v-html="item.summary"></div>
           <el-row type="flex" class="images">
             <img :src="item" alt v-for="(item,index) in item.images" :key="index" />
           </el-row>
@@ -27,12 +27,12 @@
       <!-- 单个图片的左右布局 -->
       <el-row class="content1" type="flex" v-else>
         <nuxt-link :to="{path:'/post/detail',query:{id:item.id}}">
-          <img src="/pic_sea.jpeg" alt v-for="(item,index) in item.images" :key="index" />
+          <img :src="item" alt v-for="(item,index) in item.images" :key="index" />
         </nuxt-link>
         <div>
           <nuxt-link :to="{path:'/post/detail',query:{id:item.id}}">
             <h3>{{item.title}}</h3>
-            <p class="text" v-html="item.summary"></p>
+            <div class="text" v-html="item.summary"></div>
           </nuxt-link>
           <el-row type="flex" justify="space-between" class="userInfo">
             <el-row class="left" type="flex" align="middle">
