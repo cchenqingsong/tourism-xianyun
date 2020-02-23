@@ -39,7 +39,7 @@ export default {
     return {
       // 评论数量
       commentNum: 200,
-      current: 0
+      current: 2
     };
   },
   // 注册
@@ -55,7 +55,18 @@ export default {
     handleClick(index) {
       this.current = index;
     }
-  }
+  },
+  // mounted(){
+  //   this.$axios({
+  //     url:'/hotels',
+  //     params:{
+  //       id:185
+  //     }
+  //   }).then(res=>{
+  //     console.log(res);
+      
+  //   })
+  // }
 };
 </script>
 
@@ -66,6 +77,7 @@ export default {
     margin: 20px auto;
     .menu_title {
       border-bottom: 2px solid #4c5a65;
+      margin-bottom: 20px;
       li {
         float: left;
         // width: 76px;

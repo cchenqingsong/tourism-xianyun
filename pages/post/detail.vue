@@ -120,7 +120,7 @@
       <div class="recommend-list" v-for="(item,index) in relatedStrategy" :key="index" @click='jump(item)'>
         <a href="#" class="recommend-item" v-if='item.content'>
           <div class="aside-text">
-            <div v-html="item.content"></div>
+            <div v-html="item.content" style="margin-bottom:10px;"></div>
             <p>2020-02-17 10:37 阅读 4</p>
           </div>
         </a>
@@ -370,14 +370,15 @@ export default {
     }
   }
   .el-aside {
-    padding: 20px 0;
+    padding-top: 20px;
     .aside-title {
       font-weight: 400;
       font-size: 18px;
-      padding-bottom: 10px;
+      padding-bottom: 20px;
       border-bottom: 1px solid #ddd;
     }
     .recommend-list {
+      padding: 10px 0;
       .recommend-item {
         display: block;
         .aside-text {
@@ -385,7 +386,6 @@ export default {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          padding: 20px 0;
           border-bottom: 1px solid #ddd;
           /deep/img{
             width: 60px;

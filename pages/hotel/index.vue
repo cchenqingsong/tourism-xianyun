@@ -2,9 +2,14 @@
   <div>
     <el-row type="flex" class="herder">
       <Search @searchCity="searchCity" />
+<<<<<<< HEAD
       <Area />
       <!-- @cityID="gethotel" -->
       <HotelSearch :data="data" @getSearchs="getSearchs" />
+=======
+      <Area @cityID="gethotel" :hotelList="hotelList" />
+      <HotelSearch :data="data" />
+>>>>>>> 65e26e225f7c27e6b7205f791f05e8ee9d7eed91
       <Hotels :cityHoutesList="cityHoutesList" />
       <!-- 分页 -->
       <el-pagination
@@ -15,8 +20,7 @@
         next-text="下一页>"
         @prev-click="shang"
         @next-click="xia"
-      >
-      </el-pagination>
+      ></el-pagination>
     </el-row>
   </div>
 </template>
@@ -55,8 +59,13 @@ export default {
       sousuoCityId: 0,
       // 坐标
       zuobiao: [],
+<<<<<<< HEAD
       //用于筛选的路径
       parameters: ""
+=======
+      // 酒店列表
+      hotelList: []
+>>>>>>> 65e26e225f7c27e6b7205f791f05e8ee9d7eed91
     };
   },
   mounted() {
@@ -104,6 +113,12 @@ export default {
         }
       }).then(res => {
         this.cityHoutesList = res.data;
+<<<<<<< HEAD
+=======
+        console.log(this.cityHoutesList);
+        this.hotelList = res.data.data;
+
+>>>>>>> 65e26e225f7c27e6b7205f791f05e8ee9d7eed91
         this.cityHoutesList.data.forEach(e => {
           // this.zuobiao.push(e.location);
         });
