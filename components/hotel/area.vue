@@ -90,50 +90,8 @@ export default {
     jsapi.src = url;
     document.head.appendChild(jsapi);
     window.onLoad = () => {
-<<<<<<< HEAD
-      var map = new AMap.Map("ditu");
-      AMap.plugin("AMap.CitySearch", () => {
-        var citySearch = new AMap.CitySearch();
-        citySearch.getLocalCity((status, result) => {
-          console.log(result);
-
-          if (status === "complete" && result.info === "OK") {
-            // 查询成功，result即为当前所在城市信息
-            this.cityName = result.city;
-            this.cityId = result.infocode;
-            this.$emit("cityData");
-            var citybounds = result.bounds;
-            document.getElementById("info").innerHTML =
-              "您当前所在城市：" + this.cityName;
-            //地图显示当前城市
-            map.setBounds(citybounds);
-
-            //请求景点
-            this.$axios({
-              url: "/cities",
-              params: {
-                name: this.cityName
-              }
-            }).then(res => {
-              this.jingdian = res.data.data[0].scenics;
-              this.$store.commit(
-                "houtel/setCityjingdian",
-                res.data.data[0].scenics
-              )
-              this.$router.push({
-                name: "hotel",
-                query: { city: this.jingdian[0].city }
-              });
-              // this.$emit("cityID", this.jingdian[0].city);
-            });
-          } else {
-            document.getElementById("info").innerHTML = result.info;
-          }
-        });
-=======
       var map = new AMap.Map("ditu", {
         resizeEnable: true
->>>>>>> 65e26e225f7c27e6b7205f791f05e8ee9d7eed91
       });
 
       // this.init()
