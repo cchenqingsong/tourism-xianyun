@@ -2,11 +2,11 @@
   <div>
     <el-row type="flex" class="herder">
       <Search @searchCity="searchCity" />
-      <Area />
+      <Area @cityID="gethotel" :hotelList="hotelList" />
       <!-- @cityID="gethotel" -->
       <HotelSearch :data="data" @getSearchs="getSearchs" />
-      <Area @cityID="gethotel" :hotelList="hotelList" />
-      <HotelSearch :data="data" />
+      <!-- <Area @cityID="gethotel" :hotelList="hotelList" /> -->
+      <!-- <HotelSearch :data="data" /> -->
       <Hotels :cityHoutesList="cityHoutesList" />
       <!-- 分页 -->
       <el-pagination
