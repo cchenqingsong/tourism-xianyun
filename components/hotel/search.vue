@@ -5,7 +5,7 @@
       <el-row class="row-bg" justify="start" align="middle">
         <el-breadcrumb separator="/" style="    padding: 20px 0;">
           <el-breadcrumb-item>酒店</el-breadcrumb-item>
-          <el-breadcrumb-item>广州市酒店预订</el-breadcrumb-item>
+          <el-breadcrumb-item>{{ mianbao }}酒店预订</el-breadcrumb-item>
         </el-breadcrumb>
 
         <el-form ref="form">
@@ -112,7 +112,8 @@ export default {
         ertong: "0儿童",
         //总人数
         zongrenshu: ""
-      }
+      },
+      mianbao: '广州'
     };
   },
   methods: {
@@ -124,6 +125,7 @@ export default {
         return;
       }
       this.mudi = item;
+
       this.$axios({
         url: "/cities",
         params: {
@@ -142,8 +144,14 @@ export default {
     },
     handleDepartSelect(value) {
       console.log(value);
-
+      // if (!value) {
+      this.mianbao = value.value;
+      // }
       this.$emit("searchCity", value);
+      this.$router.push({
+        name: "hotel",
+        query: { city: value.id, cityName: value.value }
+      });
     },
     //失焦触发
     moren() {},

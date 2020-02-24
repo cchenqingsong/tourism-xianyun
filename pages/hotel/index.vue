@@ -78,24 +78,39 @@ export default {
     });
     let { city } = this.$route.query;
     this.cityId = city;
-    console.log(this.cityId);
-
+    // console.log(this.cityId);
+    // if (this.$route.query.city !== undefined) {
+    //   this.$axios({
+    //     url: `/hotels?city=${this.$route.query.city}`
+    //     // params: this.$route.query.city
+    //   }).then(res => {
+    //     this.cityHoutesList = res.data;
+    //     this.cityHoutesList.data.forEach(e => {});
+    //     this.total = this.cityHoutesList.total;
+    //     this.nextStart = res.data.nextStart;
+    //   });
+    // }
+    // if (this.cityId) {
+    // setTimeout(() => {
     this.$axios({
-      url: `/hotels`,
-      params: this.$route.query
+      url: `/hotels?city=${this.$route.query.city}`
+      // params: this.$route.query.city
+      // url: "/hotels",
+      // params: { city: this.$route.query.city }
     }).then(res => {
       this.cityHoutesList = res.data;
-      console.log(this.cityHoutesList);
-      
       this.cityHoutesList.data.forEach(e => {});
       this.total = this.cityHoutesList.total;
       this.nextStart = res.data.nextStart;
+      // }, 2000);
     });
+    // }
   },
 
   methods: {
     gethotel(cityID) {
       this.cityId = cityID;
+
       this.getCity(this.cityId);
     },
 
@@ -109,7 +124,6 @@ export default {
         this.cityHoutesList = res.data;
         console.log(this.cityHoutesList);
         this.hotelList = res.data.data;
-
         this.cityHoutesList.data.forEach(e => {
           // this.zuobiao.push(e.location);
         });
@@ -118,9 +132,25 @@ export default {
       });
     },
     searchCity(value) {
-      this.$store.commit("houtel/setCityjingdian", value.scenics);
-      console.log(value);
-      this.getCity(value.id);
+      this.$store.commit("hotel/setCityjingdian", value.scenics);
+      // console.log(value);
+      // this.getCity(value.id);
+      this.$axios({
+        url: "/hotels",
+        params: {
+          city: value.id
+        }
+      }).then(res => {
+        this.cityHoutesList = res.data;
+        console.log(this.cityHoutesList);
+        this.hotelList = res.data.data;
+
+        this.cityHoutesList.data.forEach(e => {
+          // this.zuobiao.push(e.location);
+        });
+        this.total = this.cityHoutesList.total;
+        this.nextStart = res.data.nextStart;
+      });
       this.sousuoCityId = value.id;
     },
 
@@ -149,7 +179,7 @@ export default {
       });
       //保存用于上下页请求
       this.parameters = parameter;
-      return !sss;
+      return data;
     },
 
     //每次点击上下页触发

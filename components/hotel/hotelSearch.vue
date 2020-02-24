@@ -16,7 +16,7 @@
             <el-row type="flex" justify="space-between" class="pac">
               <el-dropdown>
                 <span class="el-dropdown-link" style="padding-right:70px">
-                  不限
+                  {{ buxian }}
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item
@@ -42,7 +42,7 @@
             <el-row type="flex" justify="space-between" class="pac">
               <el-dropdown>
                 <span class="el-dropdown-link" style=" padding-right:70px;">
-                  不限
+                  {{ buxian1 }}
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item
@@ -68,7 +68,7 @@
             <el-row type="flex" justify="space-between" class="pac">
               <el-dropdown>
                 <span class="el-dropdown-link" style=" padding-right:70px">
-                  不限
+                  {{ buxian2 }}
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item
@@ -94,7 +94,7 @@
             <el-row type="flex" justify="space-between" class="pac">
               <el-dropdown>
                 <span class="el-dropdown-link" style="padding-right:70px">
-                  {{ moren }}
+                  {{ buxian3 }}
                 </span>
 
                 <el-dropdown-menu slot="dropdown">
@@ -133,6 +133,10 @@ export default {
       jindu: 100,
       // list: ["复选框 A", "单选2", "单选3"],
       checkedCities: [],
+      buxian: "不限",
+      buxian1: "不限",
+      buxian2: "不限",
+      buxian3: "不限",
 
       objData: {
         price_lt: 4000,
@@ -165,6 +169,18 @@ export default {
         namss.push(id);
       }
       this.$emit("getSearchs", this.objData);
+      if (arrName === "hotellevel_in") {
+        this.buxian = `已选${namss.length}项`;
+      }
+      if (arrName === "hoteltype_in") {
+        this.buxian1 = `已选${namss.length}项`;
+      }
+      if (arrName === "hotelasset_in") {
+        this.buxian2 = `已选${namss.length}项`;
+      }
+      if (arrName === "hotelbrand_in") {
+        this.buxian3 = `已选${namss.length}项`;
+      }
     },
     formatTooltip(value) {
       this.objData.price_lt = value * 40;

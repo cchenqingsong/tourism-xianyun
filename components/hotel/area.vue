@@ -12,10 +12,14 @@
               class="jingdian"
               v-for="(item, index) in $store.state.hotel.cityjingdian"
               :key="index"
-            >{{ item.name }}</nuxt-link>
+              >{{ item.name }}</nuxt-link
+            >
           </div>
           <a href="#" @click="isShow = !isShow">
-            <i class="el-icon-d-arrow-right" style="transform: rotate(90deg)"></i>
+            <i
+              class="el-icon-d-arrow-right"
+              style="transform: rotate(90deg)"
+            ></i>
             等多个地区
           </a>
         </el-col>
@@ -27,27 +31,42 @@
           <el-badge class="mark" value="?" />:
         </el-col>
         <el-col :span="21">
-          <el-tooltip class="item" effect="dark" content="哈哈哈哈哈哈" placement="bottom-start">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="哈哈哈哈哈哈"
+            placement="bottom-start"
+          >
             <span>
               <i class="iconfont iconhuangguan"></i>
               <i class="iconfont iconhuangguan"></i>
               <i class="iconfont iconhuangguan"></i>￥332
             </span>
           </el-tooltip>
-          <el-tooltip class="item" effect="dark" content="哈哈哈哈哈哈" placement="bottom-start">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="哈哈哈哈哈哈"
+            placement="bottom-start"
+          >
             <span>
               <i class="iconfont iconhuangguan"></i>
               <i class="iconfont iconhuangguan"></i>
               <i class="iconfont iconhuangguan"></i>￥532
             </span>
           </el-tooltip>
-          <el-tooltip class="item" effect="dark" content="哈哈哈哈哈哈" placement="bottom-start">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="哈哈哈哈哈哈"
+            placement="bottom-start"
+          >
             <span>
               <i class="iconfont iconhuangguan"></i>
               <i class="iconfont iconhuangguan"></i>
               <i class="iconfont iconhuangguan"></i>￥882
             </span>
-            <span>{{mapData}}</span>
+            <span>{{ mapData }}</span>
           </el-tooltip>
         </el-col>
       </el-row>
@@ -97,45 +116,52 @@ export default {
       // this.init()
       // if(this.hotelList.length == 0) return
 
-      // AMap.plugin("AMap.CitySearch", () => {
-      //   var citySearch = new AMap.CitySearch();
-      //   citySearch.getLocalCity((status, result) => {
-      //     console.log(result);
+      AMap.plugin("AMap.CitySearch", () => {
+        var citySearch = new AMap.CitySearch();
+        citySearch.getLocalCity((status, result) => {
+          // console.log(result);
 
-      //     if (status === "complete" && result.info === "OK") {
-      //       // 查询成功，result即为当前所在城市信息
-      //       this.cityName = result.city;
-      //       this.cityId = result.infocode;
-      //       this.$emit("cityData");
-      //       var citybounds = result.bounds;
-      //       document.getElementById("info").innerHTML =
-      //         "您当前所在城市：" + this.cityName;
-      //       //地图显示当前城市
-      //       map.setBounds(citybounds);
-      //       this.$router.push({
-      //         name: "hotel",
-      //         query: { cityName: result.city }
-      //       });
-      //       //请求景点
-      //       this.$axios({
-      //         url: "/cities",
-      //         params: {
-      //           name: this.cityName
-      //         }
-      //       }).then(res => {
-      //         this.jingdian = res.data.data[0].scenics;
-      //         this.$store.commit(
-      //           "houtel/setCityjingdian",
-      //           res.data.data[0].scenics
-      //         );
-      //         this.$emit("cityID", this.jingdian[0].city);
-      //       });
-      //     } else {
-      //       document.getElementById("info").innerHTML = result.info;
-      //     }
-      //   });
-      // });
+          if (status === "complete" && result.info === "OK") {
+            // 查询成功，result即为当前所在城市信息
+            this.cityName = result.city;
+            this.cityId = result.infocode;
+            this.$emit("cityData");
+            var citybounds = result.bounds;
+            // document.getElementById("info").innerHTML =
+            // "您当前所在城市：" + this.cityName;
+            //地图显示当前城市
+            map.setBounds(citybounds);
+            // this.$router.push({
+            //   name: "hotel",
+            //   query: { cityName: result.city }
+            // });
+
+            //请求景点
+            this.$axios({
+              url: "/cities",
+              params: {
+                name: this.cityName
+              }
+            }).then(res => {
+              this.jingdian = res.data.data[0].scenics;
+              this.$store.commit(
+                "hotel/setCityjingdian",
+                res.data.data[0].scenics
+              );
+              this.$emit("cityID", this.jingdian[0].city);
+              this.$router.push({
+                name: "hotel",
+                query: { city: this.jingdian[0].city, cityName: result.city }
+              });
+            });
+          } else {
+            document.getElementById("info").innerHTML = result.info;
+          }
+        });
+      });
     };
+
+    
   },
   // },
   methods: {},
@@ -146,7 +172,7 @@ export default {
       let arr = this.hotelList.map(v => {
         return {
           jing: v.location.longitude,
-          wei: v.location.latitude,
+          wei: v.location.latitude, 
           name: v.name
         };
       });
