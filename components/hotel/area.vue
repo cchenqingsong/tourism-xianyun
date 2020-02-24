@@ -10,7 +10,7 @@
             <nuxt-link
               to="/#"
               class="jingdian"
-              v-for="(item, index) in $store.state.houtel.cityjingdian"
+              v-for="(item, index) in $store.state.hotel.cityjingdian"
               :key="index"
             >{{ item.name }}</nuxt-link>
           </div>
