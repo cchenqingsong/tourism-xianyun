@@ -4,22 +4,23 @@
     <!-- Breadcrumb 面包屑导航 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item>酒店</el-breadcrumb-item>
-      <el-breadcrumb-item>广州酒店</el-breadcrumb-item>
-      <el-breadcrumb-item>如家快捷酒店(天河方舟园店)</el-breadcrumb-item>
+      <el-breadcrumb-item>{{data.real_city}}酒店</el-breadcrumb-item>
+      <el-breadcrumb-item>{{data.name}}</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 酒店信息 -->
     <div class="hotel">
       <div class="w">
         <div class="top">
           <div class="title">
-            <h2>如家快捷酒店(天河方舟园店)</h2>
+            <h2>{{data.name}}</h2>
+            <p>{{data.alias}}</p>
             <!-- 等级 -->
             <span class="level"></span>
           </div>
           <!-- 地址 -->
           <div class="address">
             <i class="el-icon-location"></i>
-            高淳县淳溪镇镇兴路118号(高淳县委党校对面)
+            {{data.address}}
           </div>
         </div>
         <div class="content clearfix">
@@ -27,12 +28,6 @@
           <div class="slider">
             <!-- 大图 -->
             <div class="left">
-              <!-- <el-carousel height="410px" :interval="5000">
-
-                <el-carousel-item v-for="(item,index) in imgData" :key="index">
-                  <img :src="item" alt class="big_img" />
-                </el-carousel-item>
-              </el-carousel>-->
               <span class="prev" @click="previous">
                 <i class="el-icon-arrow-left"></i>
               </span>
@@ -66,24 +61,27 @@
               <!-- Progress 进度条 -->
               <el-progress
                 type="circle"
-                :percentage="4.7*20"
+                :percentage="`${data.stars}`*20"
                 :width="85"
                 color="rgb(255, 153, 0)"
                 :show-text="false"
               ></el-progress>
               <!-- 分数 -->
               <p class="grade">
-                4.7
+                {{data.stars}}
                 <span>分</span>
               </p>
               <p class="comment">
                 已有
-                <span class="comment_num">1</span> 人点评
+                <span class="comment_num">{{data.all_remarks}}</span> 人点评
               </p>
             </div>
             <!-- 最新评论 -->
             <div class="new_comment">
-              <div class="nickname">来自 <span>地球发动机</span> 的最新评论</div>
+              <div class="nickname">
+                来自
+                <span>地球发动机</span> 的最新评论
+              </div>
               <div
                 class="desc"
               >适合带6岁以上小朋友 室外室内幼儿游戏活动区域都不多 室外公共游泳池很大 但这个季节也很晒 花园很美 大唐装修也很适合中老年的审美 适合带父母出游 中餐厅东西做的不错 量也很大 房间内部设施简约大气 厚重中又带有现代化气息 床垫软硬适中 大床1.95 总的来说 是一趟不错的旅行 还会再来</div>
@@ -95,7 +93,7 @@
                   <span>收藏</span>
                 </li>
                 <li>
-                  <span>2018年装修</span>
+                  <span>{{data.renovat_time}}</span>
                 </li>
               </ul>
             </div>
@@ -108,6 +106,17 @@
 
 <script>
 export default {
+  // 接收数据
+  props: {
+    // data: {
+    //   type: Array,
+    //   default: () => []
+    // }
+    data:{
+      type:Object,
+      default:{}
+    }
+  },
   data() {
     return {
       // 酒店照片展示数据
@@ -146,6 +155,11 @@ export default {
       }
       document.querySelector(".big_img").src = this.imgData[this.current];
     }
+  },
+  mounted() {
+    setTimeout(() => {
+      console.log(this.data);
+    }, 3000);
   }
 };
 </script>
@@ -284,22 +298,22 @@ export default {
           }
         }
         // 最新评论部分
-        .new_comment{
+        .new_comment {
           font-size: 12px;
           color: #333;
           margin-top: 20px;
           padding-bottom: 15px;
           line-height: 24px;
           border-bottom: 1px solid #eee;
-          span{
+          span {
             color: rgb(255, 153, 0);
           }
-          .desc{
+          .desc {
             width: 200px;
             overflow: hidden;
             text-overflow: ellipsis;
             display: -webkit-box;
-            -webkit-line-clamp:3;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
           }
         }

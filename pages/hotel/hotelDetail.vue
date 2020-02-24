@@ -2,7 +2,7 @@
   <!-- 酒店详情 -->
   <div class="hotel_detail">
     <!-- 酒店简介 -->
-    <HotelIntro />
+    <HotelIntro :data="$store.state.hotel.hotelDetail[0]" />
     <!-- 酒店详细信息 -->
     <div class="detail">
       <!-- 表头信息 -->
@@ -17,13 +17,13 @@
         </ul>
       </div>
       <!-- 房型信息 -->
-      <Charmber v-if="current===0" />
+      <Charmber v-if="current===0" :data="$store.state.hotel.hotelDetail[0]" />
       <!-- 酒店信息 -->
-      <HotelInfo v-if="current===1"/>
+      <HotelInfo v-if="current===1" :data="$store.state.hotel.hotelDetail[0]" />
       <!-- 交通信息 -->
-      <Traffic v-if="current===2"/>
+      <Traffic v-if="current===2" :data="$store.state.hotel.hotelDetail[0]" />
       <!-- 评论 -->
-      <Comment v-if="current===3"/>
+      <Comment v-if="current===3" :data="$store.state.hotel.hotelDetail[0]" />
     </div>
   </div>
 </template>
@@ -39,7 +39,7 @@ export default {
     return {
       // 评论数量
       commentNum: 200,
-      current: 2
+      current: 0
     };
   },
   // 注册
@@ -56,17 +56,36 @@ export default {
       this.current = index;
     }
   },
-  // mounted(){
-  //   this.$axios({
-  //     url:'/hotels',
-  //     params:{
-  //       id:185
-  //     }
-  //   }).then(res=>{
-  //     console.log(res);
+  mounted() {
+    // console.log(this.$route.query.city);
+    // console.log(this.$store.state.hotel.hotelDetail);
+
+    this.$axios({
+      url: "/hotels",
+      params: {
+        id: this.$route.query.city
+      }
+    }).then(res => {
+      console.log(res);
+      // 调用store中mutations中的方法，存储酒店详情信息
+      this.$store.commit("hotel/setHotelDetail", res.data.data);
+    });
+
+    setTimeout(() => {
+      this.commentNum = this.$store.state.hotel.hotelDetail[0].all_remarks;
+    }, 0);
+
+
+    this.$axios({
+      url:'/hotels/comments',
+      params:{
+        hotel:this.$route.query.city
+      }
+    }).then(res=>{
+      console.log(res);
       
-  //   })
-  // }
+    })
+  }
 };
 </script>
 

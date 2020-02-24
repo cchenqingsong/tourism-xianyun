@@ -77,6 +77,13 @@
 
 <script>
 export default {
+  // 接收数据
+  props: {
+    data: {
+      type: Object,
+      default: {}
+    }
+  },
   data() {
     return {
       // 地图实例
@@ -97,22 +104,22 @@ export default {
     jsapi.charset = "utf-8";
     jsapi.src = url;
     document.head.appendChild(jsapi);
-    window.onLoad = function() {
+    window.onLoad = ()=> {
       var map = new AMap.Map("container");
-
+      
       // 搜索提示功能
-      AMap.plugin("AMap.Autocomplete", function() {
+      AMap.plugin("AMap.Autocomplete", ()=> {
         // 实例化Autocomplete
         // 绑定起点输入框
         var autoOptions_start = {
           // input 为绑定输入提示功能的input的DOM ID
           input: "start_site", // 绑定起点输入框
-          city: "汕头" // 限定搜索的范围
+          city: this.data.real_city // 限定搜索的范围
         };
         // 绑定终点输入框
         var autoOptions_end = {
           input: "end_site", // 绑定终点输入框
-          city: "汕头" // 限定搜索的范围
+          city: this.data.real_city // 限定搜索的范围
         };
         var autoComplete = new AMap.Autocomplete(autoOptions_start);
         var autoComplete = new AMap.Autocomplete(autoOptions_end);
@@ -120,27 +127,35 @@ export default {
       });
 
       // 搜周边
-      AMap.service(["AMap.PlaceSearch"], function() {
+      AMap.service(["AMap.PlaceSearch"], ()=> {
         //构造地点查询类
         var placeSearch = new AMap.PlaceSearch({
           type: "交通设施服务", // 兴趣点类别
           pageSize: 5, // 单页显示结果条数
           pageIndex: 1, // 页码
-          city: "广州", // 兴趣点城市
+          city: this.data.real_city, // 兴趣点城市
           citylimit: true, //是否强制限制在设置的城市内搜索
           map: map, // 展现结果的地图实例
           panel: "traffic_panel", // 结果列表将在此容器中进行展示。
           autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
         });
-
-        var cpoint = [113.3245904, 23.1066805]; //中心点坐标
+        var cpoint = [this.data.location.longitude, this.data.location.latitude]; //中心点坐标
         placeSearch.searchNearBy("", cpoint, 2000, function(status, result) {});
       });
     };
+
+
+
+    // 将酒店填入终点输入框
+    setTimeout(()=>{
+      document.querySelector("#end_site").value=this.data.name
+    },0)
   },
   methods: {
     // 当点击查询按钮时触发
     handleSearch() {
+      this.current=0;
+      
       // 获取文本框的内容
       let start = document.querySelector("#start_site").value;
       let end = document.querySelector("#end_site").value;
@@ -164,8 +179,8 @@ export default {
           });
 
           var points = [
-            { keyword: start, city: "汕头" },
-            { keyword: end, city: "汕头" }
+            { keyword: start, city: this.data.real_city },
+            { keyword: end, city: this.data.real_city }
           ];
 
           driving.search(points, function(status, result) {
@@ -182,20 +197,20 @@ export default {
       var map = new AMap.Map("container");
       if (this.current === 1) {
         // 搜周边——交通
-        AMap.service(["AMap.PlaceSearch"], function() {
+        AMap.service(["AMap.PlaceSearch"], ()=> {
           //构造地点查询类
           var placeSearch = new AMap.PlaceSearch({
             type: "交通设施服务", // 兴趣点类别
             pageSize: 5, // 单页显示结果条数
             pageIndex: 1, // 页码
-            city: "广州", // 兴趣点城市
+            city: this.data.real_city, // 兴趣点城市
             citylimit: true, //是否强制限制在设置的城市内搜索
             map: map, // 展现结果的地图实例
             panel: "traffic_panel", // 结果列表将在此容器中进行展示。
             autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
           });
 
-          var cpoint = [113.3245904, 23.1066805]; //中心点坐标
+          var cpoint = [this.data.location.longitude, this.data.location.latitude]; //中心点坐标
           placeSearch.searchNearBy("", cpoint, 2000, function(
             status,
             result
@@ -203,20 +218,20 @@ export default {
         });
       } else if (this.current === 2) {
         // 搜周边——景点
-        AMap.service(["AMap.PlaceSearch"], function() {
+        AMap.service(["AMap.PlaceSearch"], ()=> {
           //构造地点查询类
           var placeSearch = new AMap.PlaceSearch({
             type: "风景名胜", // 兴趣点类别
             pageSize: 5, // 单页显示结果条数
             pageIndex: 1, // 页码
-            city: "广州", // 兴趣点城市
+            city: this.data.real_city, // 兴趣点城市
             citylimit: true, //是否强制限制在设置的城市内搜索
             map: map, // 展现结果的地图实例
             panel: "scenery_panel", // 结果列表将在此容器中进行展示。
             autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
           });
 
-          var cpoint = [113.3245904, 23.1066805]; //中心点坐标
+          var cpoint = [this.data.location.longitude, this.data.location.latitude]; //中心点坐标
           placeSearch.searchNearBy("", cpoint, 2000, function(
             status,
             result
@@ -224,20 +239,20 @@ export default {
         });
       } else if (this.current === 3) {
         // 搜周边——美食
-        AMap.service(["AMap.PlaceSearch"], function() {
+        AMap.service(["AMap.PlaceSearch"], ()=> {
           //构造地点查询类
           var placeSearch = new AMap.PlaceSearch({
             type: "餐饮服务", // 兴趣点类别
             pageSize: 5, // 单页显示结果条数
             pageIndex: 1, // 页码
-            city: "广州", // 兴趣点城市
+            city: this.data.real_city, // 兴趣点城市
             citylimit: true, //是否强制限制在设置的城市内搜索
             map: map, // 展现结果的地图实例
             panel: "cate_panel", // 结果列表将在此容器中进行展示。
             autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
           });
 
-          var cpoint = [113.3245904, 23.1066805]; //中心点坐标
+          var cpoint = [this.data.location.longitude, this.data.location.latitude]; //中心点坐标
           placeSearch.searchNearBy("", cpoint, 2000, function(
             status,
             result
@@ -272,8 +287,8 @@ export default {
           });
 
           var points = [
-            { keyword: start, city: "汕头" },
-            { keyword: end, city: "汕头" }
+            { keyword: start, city: this.data.real_city },
+            { keyword: end, city:  this.data.real_city }
           ];
 
           driving.search(points, function(status, result) {
@@ -294,8 +309,8 @@ export default {
           });
 
           var points = [
-            { keyword: start, city: "汕头" },
-            { keyword: end, city: "汕头" }
+            { keyword: start, city: this.data.real_city },
+            { keyword: end, city:  this.data.real_city }
           ];
 
           transfer.search(points, function(status, result) {
@@ -314,8 +329,8 @@ export default {
           });
 
           var points = [
-            { keyword: start, city: "汕头" },
-            { keyword: end, city: "汕头" }
+            { keyword: start, city:  this.data.real_city },
+            { keyword: end, city:  this.data.real_city }
           ];
 
           walking.search(points, function(status, result) {

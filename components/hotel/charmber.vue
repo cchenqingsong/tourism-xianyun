@@ -26,17 +26,17 @@
     <!-- 房型列表 -->
     <div class="hotel_type_list">
       <div class="hotel_type_item">
-        <el-row>
+        <el-row v-for="(item,index) in data.products" :key="index">
           <el-col :span="8">
             <div class="clearfix">
               <img src="../../static/hotel/hotel2.jpg" alt class="hotel_type_img" />
               <div class="info">
-                <div>高级大床房A</div>
+                <div>{{item.bestType}}</div>
                 <div class="roomInfo">30㎡ 1张1.8m大床 有窗 可住2人</div>
               </div>
             </div>
           </el-col>
-          <el-col :span="2">        
+          <el-col :span="2">
             <div style="margin-top: 34px;">大床</div>
           </el-col>
           <el-col :span="3">
@@ -44,6 +44,7 @@
           </el-col>
           <el-col :span="3">
             <div>
+              <i class="el-icon-user-solid" style="color: #616161;margin-top: 34px;"></i>
               <i class="el-icon-user-solid" style="color: #616161;margin-top: 34px;"></i>
             </div>
           </el-col>
@@ -53,7 +54,7 @@
           <el-col :span="2">
             <div class="price">
               ¥
-              <span>200</span>
+              <span>{{item.price}}</span>
             </div>
           </el-col>
           <el-col :span="3">
@@ -71,7 +72,15 @@
 </template>
 
 <script>
-export default {};
+export default {
+  // 接收数据
+  props: {
+    data: {
+      type: Object,
+      default: {}
+    }
+  }
+};
 </script>
 
 <style lang='less' scoped>

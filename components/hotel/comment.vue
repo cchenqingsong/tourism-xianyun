@@ -6,34 +6,34 @@
         <!-- Progress 进度条 -->
         <el-progress
           type="circle"
-          :percentage="4.7*20"
+          :percentage="`${data.stars}`*20"
           :width="85"
           color="rgb(255, 153, 0)"
           :show-text="false"
         ></el-progress>
         <!-- 分数 -->
         <p class="grade">
-          4.7
+          {{data.stars}}
           <span>分</span>
         </p>
         <p class="comment_num">
           共有
-          <span class="num">1</span> 人点评
+          <span class="num">{{data.all_remarks}}</span> 人点评
         </p>
       </div>
       <!-- 评论标签 -->
       <div class="comments-tags">
         <p>大家觉得</p>
         <!-- 所有评论 -->
-        <span class="all_remarks">所有评论118</span>
+        <span class="all_remarks">所有评论{{data.all_remarks}}</span>
         <!-- 非常好 -->
-        <span class="very_good_remarks">非常好29</span>
+        <span class="very_good_remarks">非常好{{data.very_good_remarks}}</span>
         <!-- 好评 -->
-        <span class="good_remarks">好评54</span>
+        <span class="good_remarks">好评{{data.good_remarks}}</span>
         <!-- 差评 -->
-        <span class="bad_remarks">差评5</span>
+        <span class="bad_remarks">差评{{data.bad_remarks}}</span>
         <!-- 非常差 -->
-        <span class="very_bad_remarks">非常差3</span>
+        <span class="very_bad_remarks">非常差{{data.very_bad_remarks}}</span>
       </div>
     </div>
     <div class="comment_info clearfix">
@@ -49,7 +49,27 @@
 </template>
 
 <script>
-export default {};
+export default {
+  // 接收数据
+  props: {
+    data: {
+      type: Object,
+      default: {}
+    }
+  },
+  // mounted(){
+  //   // 获取酒店评论信息
+  //   this.$axios({
+  //     url:'/hotels/comments',
+  //     params:{
+  //       hotel:this.data.id
+  //     }
+  //   }).then(res=>{
+  //     console.log(res);
+      
+  //   })
+  // }
+};
 </script>
 
 <style lang='less' scoped>
