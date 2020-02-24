@@ -266,6 +266,8 @@ export default {
             follow: this.follow
         })
       }
+      // 刷新评论
+        this.getDataList()
       // 评论完成后，将输入框、等等清零
         this.inputData = ''
         this.replyMan = ''

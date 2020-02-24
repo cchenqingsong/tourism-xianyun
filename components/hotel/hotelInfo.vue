@@ -19,13 +19,13 @@
         <span class="title-text">基本信息</span>
       </div>
       <ul>
-        <li>2007年开业</li>
+        <li>{{data.creation_time}}</li>
         <li class="line"></li>
-        <li>2018年装修</li>
+        <li>{{data.renovat_time}}</li>
         <li class="line"></li>
-        <li>共216间客房</li>
+        <li>共{{data.roomCount}}间客房</li>
         <li class="line"></li>
-        <li>酒店 020-89178888</li>
+        <li>酒店 {{data.phone}}</li>
         <li class="line"></li>
         <li>同程预订电话 95711</li>
       </ul>
@@ -81,7 +81,7 @@
         <span class="title-text">酒店简介</span>
       </div>
       <div class="introduce_text" :class="{active:isShowAll}">
-        公寓位于广州海珠区同福西路同源街17号万科峯汇1812房，邻近珠江靠近广州市广播电视大学德和地区、沙面、海幢公园等。
+        公寓位于{{data.address}}。
         公寓拥有现在潮流设计统一精装修客房，便捷的交通。
         公寓提供高速宽带、无线WIFI覆盖、LED电视、独立洗手间、全天热水、舒适的睡床等，带中国风的装饰、服务设施一应俱全。
         公寓本着以人为本、宾客至上的服务宗旨。
@@ -98,6 +98,13 @@
 
 <script>
 export default {
+  // 接收数据
+  props: {
+    data: {
+      type: Object,
+      default: {}
+    }
+  },
   data() {
     return {
       isShowAll: false,
