@@ -97,9 +97,13 @@ export default {
   }
   // 房型列表
   .hotel_type_list {
+    margin-top: 10px;
     .hotel_type_item {
-      padding: 15px 0;
+      /deep/.el-row{
+      padding-bottom: 10px;
       border-bottom: 1px solid #eee;
+        margin-bottom: 10px;
+      }
       .hotel_type_img {
         float: left;
         width: 140px;
