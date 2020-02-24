@@ -81,7 +81,10 @@ export default {
   props: {
     data: {
       type: Object,
-      default: {}
+      // default: {}
+      default() {
+        return {};
+      }
     }
   },
   data() {
@@ -104,11 +107,11 @@ export default {
     jsapi.charset = "utf-8";
     jsapi.src = url;
     document.head.appendChild(jsapi);
-    window.onLoad = ()=> {
+    window.onLoad = () => {
       var map = new AMap.Map("container");
-      
+
       // 搜索提示功能
-      AMap.plugin("AMap.Autocomplete", ()=> {
+      AMap.plugin("AMap.Autocomplete", () => {
         // 实例化Autocomplete
         // 绑定起点输入框
         var autoOptions_start = {
@@ -127,7 +130,7 @@ export default {
       });
 
       // 搜周边
-      AMap.service(["AMap.PlaceSearch"], ()=> {
+      AMap.service(["AMap.PlaceSearch"], () => {
         //构造地点查询类
         var placeSearch = new AMap.PlaceSearch({
           type: "交通设施服务", // 兴趣点类别
@@ -139,23 +142,24 @@ export default {
           panel: "traffic_panel", // 结果列表将在此容器中进行展示。
           autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
         });
-        var cpoint = [this.data.location.longitude, this.data.location.latitude]; //中心点坐标
+        var cpoint = [
+          this.data.location.longitude,
+          this.data.location.latitude
+        ]; //中心点坐标
         placeSearch.searchNearBy("", cpoint, 2000, function(status, result) {});
       });
     };
 
-
-
     // 将酒店填入终点输入框
-    setTimeout(()=>{
-      document.querySelector("#end_site").value=this.data.name
-    },0)
+    setTimeout(() => {
+      document.querySelector("#end_site").value = this.data.name;
+    }, 0);
   },
   methods: {
     // 当点击查询按钮时触发
     handleSearch() {
-      this.current=0;
-      
+      this.current = 0;
+
       // 获取文本框的内容
       let start = document.querySelector("#start_site").value;
       let end = document.querySelector("#end_site").value;
@@ -197,7 +201,7 @@ export default {
       var map = new AMap.Map("container");
       if (this.current === 1) {
         // 搜周边——交通
-        AMap.service(["AMap.PlaceSearch"], ()=> {
+        AMap.service(["AMap.PlaceSearch"], () => {
           //构造地点查询类
           var placeSearch = new AMap.PlaceSearch({
             type: "交通设施服务", // 兴趣点类别
@@ -210,7 +214,10 @@ export default {
             autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
           });
 
-          var cpoint = [this.data.location.longitude, this.data.location.latitude]; //中心点坐标
+          var cpoint = [
+            this.data.location.longitude,
+            this.data.location.latitude
+          ]; //中心点坐标
           placeSearch.searchNearBy("", cpoint, 2000, function(
             status,
             result
@@ -218,7 +225,7 @@ export default {
         });
       } else if (this.current === 2) {
         // 搜周边——景点
-        AMap.service(["AMap.PlaceSearch"], ()=> {
+        AMap.service(["AMap.PlaceSearch"], () => {
           //构造地点查询类
           var placeSearch = new AMap.PlaceSearch({
             type: "风景名胜", // 兴趣点类别
@@ -231,7 +238,10 @@ export default {
             autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
           });
 
-          var cpoint = [this.data.location.longitude, this.data.location.latitude]; //中心点坐标
+          var cpoint = [
+            this.data.location.longitude,
+            this.data.location.latitude
+          ]; //中心点坐标
           placeSearch.searchNearBy("", cpoint, 2000, function(
             status,
             result
@@ -239,7 +249,7 @@ export default {
         });
       } else if (this.current === 3) {
         // 搜周边——美食
-        AMap.service(["AMap.PlaceSearch"], ()=> {
+        AMap.service(["AMap.PlaceSearch"], () => {
           //构造地点查询类
           var placeSearch = new AMap.PlaceSearch({
             type: "餐饮服务", // 兴趣点类别
@@ -252,7 +262,10 @@ export default {
             autoFitView: true // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
           });
 
-          var cpoint = [this.data.location.longitude, this.data.location.latitude]; //中心点坐标
+          var cpoint = [
+            this.data.location.longitude,
+            this.data.location.latitude
+          ]; //中心点坐标
           placeSearch.searchNearBy("", cpoint, 2000, function(
             status,
             result
@@ -288,7 +301,7 @@ export default {
 
           var points = [
             { keyword: start, city: this.data.real_city },
-            { keyword: end, city:  this.data.real_city }
+            { keyword: end, city: this.data.real_city }
           ];
 
           driving.search(points, function(status, result) {
@@ -310,7 +323,7 @@ export default {
 
           var points = [
             { keyword: start, city: this.data.real_city },
-            { keyword: end, city:  this.data.real_city }
+            { keyword: end, city: this.data.real_city }
           ];
 
           transfer.search(points, function(status, result) {
@@ -329,8 +342,8 @@ export default {
           });
 
           var points = [
-            { keyword: start, city:  this.data.real_city },
-            { keyword: end, city:  this.data.real_city }
+            { keyword: start, city: this.data.real_city },
+            { keyword: end, city: this.data.real_city }
           ];
 
           walking.search(points, function(status, result) {

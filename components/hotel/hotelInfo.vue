@@ -50,7 +50,7 @@
                 {{children}}
               </span>
             </el-col>
-          </el-row> -->
+          </el-row>-->
         </div>
       </div>
     </div>
@@ -102,7 +102,10 @@ export default {
   props: {
     data: {
       type: Object,
-      default: {}
+      // default: {}
+      default() {
+        return {};
+      }
     }
   },
   data() {

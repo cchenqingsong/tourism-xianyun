@@ -112,9 +112,12 @@ export default {
     //   type: Array,
     //   default: () => []
     // }
-    data:{
-      type:Object,
-      default:{}
+    data: {
+      type: Object,
+      // default:{}
+      default() {
+        return {};
+      }
     }
   },
   data() {

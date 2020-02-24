@@ -77,7 +77,10 @@ export default {
   props: {
     data: {
       type: Object,
-      default: {}
+      // default: {}
+      default() {
+        return {};
+      }
     }
   }
 };

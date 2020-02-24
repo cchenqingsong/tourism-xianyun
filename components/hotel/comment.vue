@@ -54,9 +54,12 @@ export default {
   props: {
     data: {
       type: Object,
-      default: {}
+      // default: {}
+      default() {
+        return {};
+      }
     }
-  },
+  }
   // mounted(){
   //   // 获取酒店评论信息
   //   this.$axios({
@@ -66,7 +69,7 @@ export default {
   //     }
   //   }).then(res=>{
   //     console.log(res);
-      
+
   //   })
   // }
 };
