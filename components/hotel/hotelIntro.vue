@@ -62,6 +62,7 @@
               <el-progress
                 type="circle"
                 :percentage="`${data.stars}`*20"
+                v-if="`${data.stars}`*20"
                 :width="85"
                 color="rgb(255, 153, 0)"
                 :show-text="false"
